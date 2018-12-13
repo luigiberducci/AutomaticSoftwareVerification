@@ -10,6 +10,6 @@ function [u_signal] = rand_input(t_final, sample_time)
 %   `u_signal`  is an array of size (1/sample_time)*t_final
 %               containing the input signal
 time = [0:sample_time:t_final];
-u_signal = randi([0,1], size(time))
+u_signal = randi([0,1], size(time));
 end
 

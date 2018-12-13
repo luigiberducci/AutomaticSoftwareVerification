@@ -1,3 +1,4 @@
+function system = create_model(tf, t)
 % Dummy Discrete Time System
 % x(k+1) = x(k) + u(k)
 % y(k+1) = x(k)
@@ -12,17 +13,10 @@
 % Requirements:
 % -------------
 %       `rand_input` MATLAB function which return input vector
-t = 1;
-tf = 10;
-
 A = [1];
 B = [1];
 C = [1];
 D = [0];
 
 system = ss(A, B, C, D, t);
-
-time = [0:t:tf];
-u = rand_input(tf, t);
-
-[y, t, x] = lsim(system, u, time);
+end
