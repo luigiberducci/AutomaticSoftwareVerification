@@ -4,12 +4,8 @@ classdef ExplicitMidpointRule < sim.Simulator
     %  Corrector: x_c(k+1)   = x(k) + h(dx_p(k+1/2)/dt)
     methods
         function obj = ExplicitMidpointRule(h, A, x0)
-            %% EXPLICITMIDPOINTRULE Constructor of object FE.
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
+            %% FORWARDEULER Construct an instance of EMR simulator (it is RK2)
+            obj = obj@sim.Simulator(h, A, x0);
         end
         function obj = step(obj)
             %% STEP Go ahed the simulation of 1 step.

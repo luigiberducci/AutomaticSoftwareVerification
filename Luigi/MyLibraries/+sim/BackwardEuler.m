@@ -3,12 +3,8 @@ classdef BackwardEuler < sim.Simulator
     %  x(k+1) = x(k) + h*(d(x(k+1))/dt) = inv(I-hA)*(x(k)
     methods
         function obj = BackwardEuler(h, A, x0)
-            %% FORWARDEULER Constructor of object FE.
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
+            %% BACKWARDEULER Construct an instance of BE simulator
+            obj = obj@sim.Simulator(h, A, x0);
         end
         function obj = step(obj)
             %% STEP Go ahed the simulation of 1 step.

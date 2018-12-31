@@ -4,12 +4,8 @@ classdef HeunsMethod < sim.Simulator
     %  Corrector: x_c(k+1) = x(k) + 0.5*h(dx(k) + dx_p(k+1)/dt)
     methods
         function obj = HeunsMethod(h, A, x0)
-            %% HEUNSMETHOD Constructor of object FE.
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
+            %% HEUNSMETHOD Construct an instance of HM simulator (it is RK2)
+            obj = obj@sim.Simulator(h, A, x0);
         end
         function obj = step(obj)
             %% STEP Go ahed the simulation of 1 step.

@@ -14,15 +14,15 @@ classdef RK2 < sim.RungeKutta
     methods
         function obj = RK2(h, A, x0)
             %RK2 Construct an instance of this class
-            %    The current implementation is also called Heun's Method
+            %    The current implementation is also called Heun's
+           
+            % Invoke the superclass' constructor
+            obj = obj@sim.RungeKutta(h, A, x0);
+            
+            % Define Alpha, Beta specific for this algorithm
             obj.Alpha = [1; 1];
             obj.Beta  = [  1,   0;
                          1/2, 1/2];
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
         end
     end
 end

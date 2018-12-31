@@ -4,12 +4,9 @@ classdef PredictorCorrector < sim.Simulator
     %  Corrector: x_c(k+1) = x(k) + h(dx_p(k+1)/dt)
     methods
         function obj = PredictorCorrector(h, A, x0)
-            %% PREDICTORCORRECTOR Constructor of object FE.
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
+            %% PREDICTORCORRECTOR Construct an instance of generic PC simulator
+            %  It isn't a real simulator, it was to intruduce RK family
+            obj = obj@sim.Simulator(h, A, x0);
         end
         function obj = step(obj)
             %% STEP Go ahed the simulation of 1 step.

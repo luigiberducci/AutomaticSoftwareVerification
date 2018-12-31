@@ -3,12 +3,8 @@ classdef ForwardEuler < sim.Simulator
     %  x(k+1) = x(k) + h*(d(x(k))/dt) = (I+Ah)x(k)
     methods
         function obj = ForwardEuler(h, A, x0)
-            %% FORWARDEULER Constructor of object FE.
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
+            %% FORWARDEULER Construct an instance of FE simulator
+            obj = obj@sim.Simulator(h, A, x0);
         end
         function obj = step(obj)
             %% STEP Go ahed the simulation of 1 step.

@@ -13,6 +13,11 @@ classdef BDF < sim.Simulator
         function obj = BDF(h, A, x0, order)
             %BDF Construct an instance of this class
             %   Detailed explanation goes here
+            
+            % Invoke the superclass' constructor
+            obj = obj@sim.Simulator(h, A, x0);
+            
+            % Define the matrices for BDF algorithms and the desired order
             obj.futureDerivativeCoeff = [1; 2/3; 6/11; 12/25; 60/137; 60/147];
             obj.pastStateCoeffs = [       1,        0,       0,        0,      0,       0;
                                         4/3,     -1/3,       0,        0,      0,       0;
@@ -20,13 +25,7 @@ classdef BDF < sim.Simulator
                                       48/25,   -36/25,   16/25,    -3/25,      0,       0;
                                     300/137, -300/137, 200/137,  -75/137, 12/137,       0;
                                     360/147, -450/147, 400/147, -225/147, 72/147, -10/147];
-            
             obj.order = order;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.trajectory(1, :) = x0;
-            obj.A  = A;
         end
         
         function obj = step(obj)

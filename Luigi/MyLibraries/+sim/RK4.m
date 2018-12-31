@@ -16,16 +16,16 @@ classdef RK4 < sim.RungeKutta
             %RK2 Construct an instance of this class
             %    The current implementation is the well-known RK4 taken
             %    from the book (page 79).
+            
+            % Invoke the superclass' constructor
+            obj = obj@sim.RungeKutta(h, A, x0);
+            
+            % Define Alpha, Beta specific for this algorithm
             obj.Alpha = [1/2; 1/2; 1; 1];
             obj.Beta  = [1/2,   0,   0,   0;
                            0, 1/2,   0,   0;
                            0,   0,   1,   0;
                          1/6, 1/3, 1/3, 1/6];
-            obj.trajectory(1,:) = x0;
-            obj.numberOfSteps = 0;
-            obj.h  = h;
-            obj.x0 = x0;
-            obj.A  = A;
         end
     end
 end
