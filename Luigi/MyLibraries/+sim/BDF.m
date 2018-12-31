@@ -18,7 +18,7 @@ classdef BDF < sim.Simulator
             obj = obj@sim.Simulator(h, A, x0);
             
             % Define the matrices for BDF algorithms and the desired order
-            obj.futureDerivativeCoeff = [1; 2/3; 6/11; 12/25; 60/137; 60/147];
+            obj.futureDerivativeCoeff = [ 1;      2/3;    6/11;    12/25; 60/137;  60/147];
             obj.pastStateCoeffs = [       1,        0,       0,        0,      0,       0;
                                         4/3,     -1/3,       0,        0,      0,       0;
                                       18/11,    -9/11,    2/11,        0,      0,       0;

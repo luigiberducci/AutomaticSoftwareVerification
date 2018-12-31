@@ -75,6 +75,23 @@ function [F] = getMatrixF(A, h, algo)
         O = zeros(size(A));
         F = [     O,     I;
              -1/3*M, 4/3*M];
+    elseif algo=="BDF3"
+        % Details omitted, see notes on tablet. 
+        M = inv(I - 6/11*Ah);
+        O = zeros(size(A));
+        F = [     O,       I,       O;
+                  O,       O,       I;
+             2/11*M, -9/11*M, 18/11*M];
+    elseif algo=="BDF6"
+        % Details omitted, see notes on tablet. 
+        M = inv(I - 60/147*Ah);
+        O = zeros(size(A));
+        F = [        O,        I,          O,         O,          O,         O;
+                     O,        O,          I,         O,          O,         O;
+                     O,        O,          O,         I,          O,         O;
+                     O,        O,          O,         O,          I,         O;
+                     O,        O,          O,         O,          O,         I;
+             -10/147*M, 72/147*M, -225/147*M, 400/147*M, -450/147*M, 360/147*M];
     end
 end
 

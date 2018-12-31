@@ -7,7 +7,7 @@ function [h_max] = getMaxStep(A, h_upper, h_lower, algo)
 % explicit. Conversely, if `algo` is BackwardEuler or Backward Difference
 % Formula, then it considers implicit.
     explicitMethods = {'FE', 'PC', 'HE', 'EMR', 'RK2', 'RK3', 'RK4'};
-    implicitMethods = {'BE', 'BDF2'};
+    implicitMethods = {'BE', 'BDF2', 'BDF3', 'BDF6'};
     
     if any(strcmp(explicitMethods, algo))
         h_max = met.getMaxStepExplicit(A, h_upper, h_lower, algo);

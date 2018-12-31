@@ -6,7 +6,7 @@ function [h_max] = getMaxStepImplicit(A, h_upper, h_lower, algo)
     maxErrTolerance = 10^-9;
     currentError    = Inf;
     k= 0;
-    while currentError > maxErrTolerance && k<=1000
+    while currentError > maxErrTolerance && k<=10000
         h = (h_upper + h_lower)/2;      % Take middle value in the interval
         F = met.getMatrixF(A, h, algo); % Compute the F matrix (discretized system)
         
