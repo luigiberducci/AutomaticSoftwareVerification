@@ -7,6 +7,7 @@ end
 
 function plotContourn(X, Y, algo)
     plot(X, Y);
+    grid on;
     figureTitle = sprintf("%s Stability Region", algo);
     title(figureTitle);
 end
@@ -24,6 +25,7 @@ end
 
 function [x, y] = getIthCartesianCoordinates(i, algo)
     [alpha, h_max] = getIthAngleAndMaxStep(i, algo);    
+    display(eig(getMatrixAFromAngle(alpha)));
     [x,y] = convertPolarToCartesian(alpha, h_max);
 end
 
@@ -61,7 +63,8 @@ end
 function [A] = getMatrixAFromAngle(alpha)
 	radalpha = alpha*pi/180;
     x = cos(radalpha);
-    A = [0, 1; -1, 2*x];
+    A = [ 0,   1; 
+         -1, 2*x];
 end
 
 function [rangeSize, h_upper, h_lower] = getConstants()
@@ -75,5 +78,5 @@ end
 
 function [u, l] = getDefaultStepBounds()
     u = 1;
-    l = 0.001;
+    l = 1e-07;
 end

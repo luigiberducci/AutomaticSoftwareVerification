@@ -26,38 +26,66 @@
 %  and   B = (Ri*(1-m0))/(C*Ri*(Ri+(1-Ri)*m0))
 
 % Simulation parameters
-time = getTimeVector(0, 0.01, 0.1); % Time
+time = getTimeVector(0, 0.001, 0.1); % Time
 u0 = getSinusoidalSignal(time);     % Input
 
 % State-space model
-[A, B] = getModel();
+[A, B, C, D] = getModel();
+[traj, out] = simulate(A, B, C, D, time, u0, 0);
 
-function [x] = simulate(A, B, time, u, x0)
-    syms m0;
+function [X, Y] = simulate(A, B, C, D, time, u, x0)
     [Ri, RL, C] = getCircuitComponents();
     
-    x = [x0];
-    for step=1:size(time,1)
+    X = [x0];
+    Y = [];
+        
+    m0 = 0;
+    u0 = u(1);
+    u2 = X(end);
+    ev = 1/(m0 + (1-m0)*Ri) * (u0-u2);
+    if ev<0
+        m0 = 1;
+    else
+        m0 = 0;
+    end
+    
+    flag = [m0];
+    for step = 1:size(time,2)
         u0 = u(step);
-        u2 = x(end); 
+        u2 = X(end); 
         ev = 1/(m0 + (1-m0)*Ri) * (u0-u2);
         
-        % IF pre(ev)==0 and ev==1 then event occurred
-        % Then change m0
+        %Check if event triggered
+        ev = 1/(m0 + (1-m0)*Ri) * (u0-u2);
+        if ev<0
+            m0 = 1-m0;
+        end
+    
+        flag(end+1) = m0;
         
         % Next step
+        next_u2 = u2 + A(m0)*u2 + B(m0)*u0;
+        y = C*u2 + D*u0;
         
-        % Append new state
+        % Append new state and output
+        X(end+1) = next_u2;
+        Y(end+1) = y;
+        
+        old_ev = ev;
     end
 end
 
-function [A, B] = getModel()
+function [A, B, C, D] = getModel()
     syms m0;
     [Ri, RL, C] = getCircuitComponents();
     
     A = (m0*(RL+Ri-1)-Ri)/(C*Ri*RL*(Ri+(1-Ri)*m0));
     B = (Ri*(1-m0))/(C*Ri*(Ri+(1-Ri)*m0));
+    C = 1;  % The output is `u2`, then y=1*x+0*u
+    D = 0;
     
+    A = matlabFunction(A); 
+    B = matlabFunction(B);
 end
 
 function [U] = getSinusoidalSignal(time)
