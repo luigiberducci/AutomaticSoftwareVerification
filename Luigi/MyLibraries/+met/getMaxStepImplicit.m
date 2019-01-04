@@ -3,7 +3,7 @@ function [h_max] = getMaxStepImplicit(A, h_upper, h_lower, algo)
 %  Given an implicit algorithm `algo`, the method compute the search of
 %  maximum step-size to ensure numerical instability (the eigenvalues of the
 %  discretized system, described by F, are inside the Unit Circle).
-    maxErrTolerance = 10^-9;
+    maxErrTolerance = 10^-6;
     currentError    = Inf;
     k= 0;
     while currentError > maxErrTolerance && k<=10000

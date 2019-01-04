@@ -3,15 +3,15 @@ function [h_max] = getMaxStepExplicit(A, h_upper, h_lower, algo)
 %  Given an explicit algorithm `algo`, the method compute the search of
 %  maximum step-size to ensure numerical stability (the eigenvalues of the
 %  discretized system, described by F, are inside the Unit Circle).
-    maxErrTolerance = 10^-3;
+    maxErrTolerance = 1e-6;
     currentError    = Inf;
     numberOfIterations = 0;
     
-    while currentError > maxErrTolerance && numberOfIterations<=1000
+    while currentError > maxErrTolerance && numberOfIterations<=10000
         h = (h_upper + h_lower)/2;      % Take middle value in the interval
         F = met.getMatrixF(A, h, algo); % Compute the F matrix (discretized system)
         
-        dominantEig  = abs(max(eig(F)));     % Abs value of dominant eigenvalue
+        dominantEig  = max(abs(eig(F)));     % Abs value of dominant eigenvalue
         currentError = dominantEig - 1;      % Compare with Unit Circle (UC)
         
         if currentError > 0     % Then the abs value of eig is out of UC
