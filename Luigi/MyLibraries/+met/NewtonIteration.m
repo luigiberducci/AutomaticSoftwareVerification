@@ -46,6 +46,8 @@ classdef NewtonIteration
             obj.f_x(end+1) = obj.F(x_l1);
         end
         
+        %% TODO: Implementare convergenza NI
+        
         function plot(obj)
             % PLOT Plot the function in the most significant range and the
             % points corresponding to NI attempt. The most significant

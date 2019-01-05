@@ -33,7 +33,8 @@ classdef Simulator
         end
         function obj = reset(obj)
             %% RESET Overwrite simulation and reset its content.
-            obj.trajectory(1, :) = x0;
+            obj.trajectory = [];
+            obj.trajectory(1, :) = obj.x0;
             obj.numberOfSteps = 0;
         end
     end

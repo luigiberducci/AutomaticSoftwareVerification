@@ -61,6 +61,9 @@ function [F] = getMatrixF(A, h, algo)
         %                 + 1/6*((A*h)^3)*x_{k} + 1/24*((A*h)^4)*x_k =
         %         = [I + Ah + (Ah^2)/2 + (Ah^3)/6 + (Ah^4)/24] * x_k
         F = I + Ah + 1/2*(Ah^2) + 1/6*(Ah^3) + 1/24*(Ah^4);
+    elseif algo=="BDF1"
+        % Equal to Backward Euler
+        F = inv(I - Ah);
     elseif algo=="BDF2"
         % Details omitted, see notes on tablet. Basic idea: Since we need
         % to store a previous state, add a variable z_{pre} and convert the
@@ -82,6 +85,23 @@ function [F] = getMatrixF(A, h, algo)
         F = [     O,       I,       O;
                   O,       O,       I;
              2/11*M, -9/11*M, 18/11*M];
+    elseif algo=="BDF4"
+        % Details omitted, see notes on tablet. 
+        M = inv(I - 12/25*Ah);
+        O = zeros(size(A));
+        F = [      O,       I,        O,     O;
+                   O,       O,        I,     O;
+                   O,       O,        O,     I;
+             -3/25*M, 16/25*M, -36/25*M, 48/25*M];
+    elseif algo=="BDF5"
+        % Details omitted, see notes on tablet. 
+        M = inv(I - 60/137*Ah);
+        O = zeros(size(A));
+        F = [       O,         I,          O,          O,          O;
+                    O,         O,          I,          O,          O;
+                    O,         O,          O,          I,          O;
+                    O,         O,          O,          O,          I;
+             12/137*M, -75/137*M,  200/137*M, -300/137*M,  300/137*M];
     elseif algo=="BDF6"
         % Details omitted, see notes on tablet. 
         M = inv(I - 60/147*Ah);
