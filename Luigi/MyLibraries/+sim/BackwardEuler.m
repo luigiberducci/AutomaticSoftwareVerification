@@ -10,7 +10,7 @@ classdef BackwardEuler < sim.Simulator
             %% STEP Go ahed the simulation of 1 step.
             x_k = transpose(obj.trajectory(end, :));
 
-            F = inv(eye(size(obj.A)) - obj.h*obj.A);
+            F = met.getMatrixF(obj.A, obj.h, "BE");
             x_k1 = F*x_k;       % Compute next state
             % Append next state and increment steps counter
             obj.trajectory(end+1, :) = x_k1;
