@@ -71,7 +71,8 @@ classdef SimulatorFactory
         end
         
         function [time] = getTimeVector(obj, t0, tf)
-            time = t0:obj.sim.h:tf;
+            h = obj.sim.h;
+            time = t0:h:tf;
         end
         
         function plot(obj, t0, tf)
@@ -90,13 +91,13 @@ classdef SimulatorFactory
         function [x] = simulateAnalytical(obj, t0, tf)
             x0 = obj.sim.x0;
             A = obj.sim.A;
-            B = zeros(size(A,1),1);
-            C = eye(size(A));
-            D = zeros(size(A,1),1);
-            sys = ss(A,B,C,D, obj.sim.h);
+            
             time = obj.getTimeVector(t0, tf);
-            u = zeros(size(time));
-            [y, t, x] = lsim(sys, u, time, x0);
+            x = zeros(size(time, 2), size(x0, 1));
+            for k=1:size(time, 2)
+                t = time(k);
+                x(k, :) = expm(A*t)*x0;
+            end
         end
     end
     

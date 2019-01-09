@@ -33,6 +33,7 @@ classdef BDF < sim.Simulator
                 flagStartup = false;
             end
             obj.flagStartupWithRK = flagStartup;
+            obj.numberOfSteps = -1;
         end
         
         function obj = step(obj)
@@ -43,29 +44,36 @@ classdef BDF < sim.Simulator
             % Initialize the buffer of previous state as 0-states
             bufferOfStates = zeros(size(obj.futureDerivativeCoeff,1), size(obj.A,1));
             
-            if size(obj.trajectory, 1) < obj.order
-                %% TODO
+            if obj.numberOfSteps==-1
                 if obj.flagStartupWithRK==true
-                    x_k = obj.trajectory(end, :);
-                    x_k1 = obj.getNextStateWithRK4(x_k);
+                    obj = obj.getFirstStatesWithRK4();
                 else
-                    for i = 1:size(obj.trajectory, 1)   % Fill with the available states
-                        bufferOfStates(i, :) = obj.trajectory((end-i+1), :);                    
-                    end
-                    currentOrder = size(obj.trajectory, 1);
-                    x_k1 = obj.getNextStateWithBDF(currentOrder, bufferOfStates);
+                    obj = obj.getFirstStatesWithLowerBDF();
                 end
-            else
-                % Fetch the last `order` states    
-                for i = 1:obj.order
-                    bufferOfStates(i, :) = obj.trajectory((end-i+1), :);
-                end
-                currentOrder = obj.order;
-                x_k1 = obj.getNextStateWithBDF(currentOrder, bufferOfStates);
+                obj.numberOfSteps = 0;
             end
+            % Fetch the last `order` states    
+            for i = 1:obj.order
+                bufferOfStates(i, :) = obj.trajectory((end-i+1), :);
+            end
+                
+            x_k1 = obj.getNextStateWithBDF(obj.order, bufferOfStates);
+                
             % Add the new state to trajectory, increment the steps counter
             obj.trajectory(end+1, :) = x_k1;
             obj.numberOfSteps = obj.numberOfSteps + 1;
+        end
+        
+        function obj = getFirstStatesWithLowerBDF(obj)
+            bufferOfStates = zeros(size(obj.futureDerivativeCoeff,1), size(obj.A,1));
+            while size(obj.trajectory, 1)<obj.order
+                for i = 1:size(obj.trajectory, 1)   % Fill with the available states
+                    bufferOfStates(i, :) = obj.trajectory((end-i+1), :);                    
+                end
+                currentOrder = size(obj.trajectory, 1);
+                x_k1 = obj.getNextStateWithBDF(currentOrder, bufferOfStates);
+                obj.trajectory(end+1, :) = x_k1;
+            end
         end
         
         function [x_k1] = getNextStateWithBDF(obj, order, bufferOfStates)
@@ -88,11 +96,19 @@ classdef BDF < sim.Simulator
                   currPastCoeffs(6)*transpose(bufferOfStates(6,:)) );
         end
         
-        function [x_k1] = getNextStateWithRK4(obj, current_state)
-            RK4Simulator = sim.RK4(obj.h, obj.A, current_state);
-            RK4Simulator = RK4Simulator.step();
-            x = RK4Simulator.getTrajectory();
-            x_k1 = x(end, :);
+        function obj = getFirstStatesWithRK4(obj)
+            verySmallStep = 1e-3;
+            RK4Simulator = sim.RK4(verySmallStep, obj.A, obj.x0);
+            for i=1:obj.order
+                RK4Simulator = RK4Simulator.step();    
+            end
+            obj.trajectory = RK4Simulator.getTrajectory();
+        end
+        
+        function [x] = getTrajectory(obj)
+            %Delete first steps (RK4)
+            init = obj.order + 1;
+            x = obj.trajectory(init:end, :);
         end
     end
 end

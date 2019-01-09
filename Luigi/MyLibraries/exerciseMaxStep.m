@@ -3,7 +3,7 @@ clear;
 A = [20, 1;
       0, 20];
   
-algo = "BDF6";
+algo = "BE";
 
 h_upper = 30;
 h_lower = 0;
