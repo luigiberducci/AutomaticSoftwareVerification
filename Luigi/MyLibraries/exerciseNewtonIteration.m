@@ -5,7 +5,7 @@ clear;
 syms x;
 
 %Define zero-crossing function
-f = 3*sin(x) - x - 1;
+f = 5*sin(x) - log(1+x^2) - 3;
 
 %Define first attempt (starting point)
 x0 = 0;

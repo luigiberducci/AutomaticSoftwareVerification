@@ -82,6 +82,10 @@ classdef NewtonIteration
             end
         end
         
+        function x = getLastValue(obj)
+            x = obj.x(end, :);
+        end
+        
         function plot(obj, varargin)
             % PLOT Plot the function in the most significant range and the
             % points corresponding to NI attempt. The most significant

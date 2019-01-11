@@ -1,9 +1,9 @@
 clear;
 
-A = [20, 1;
-      0, 20];
+A = [100,   1;
+       0, 100];
   
-algo = "BE";
+algo = "BDF5";
 
 h_upper = 30;
 h_lower = 0;
