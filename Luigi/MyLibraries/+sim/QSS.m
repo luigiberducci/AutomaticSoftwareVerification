@@ -120,7 +120,7 @@ classdef QSS < sim.Simulator
         end
         
         function [x] = getTrajectory(obj)
-            x = obj.q_trajectory(2:end, :);
+            x = obj.trajectory(2:end, :);
         end
         
         function [t] = getSimulationTimeVector(obj)

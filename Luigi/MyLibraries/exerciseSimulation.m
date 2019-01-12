@@ -11,7 +11,7 @@ algo = "QSS";
 h_or_q = 0.1;
 
 t0 = 0;
-tf = 50;
+tf = 10;
 
 simManager = sim.SimulatorFactory(algo, A, h_or_q, x0);
 
@@ -67,6 +67,7 @@ function [e] = qssError(xs, ts, xa, ta)
     end
     figure(10);
     plot(ta, interpolated);
+    title("Interpolated shape");
 end
 
 
