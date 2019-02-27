@@ -1,0 +1,5 @@
+{0} {NOP} {None} {None};
+{1} {Remove Disturbance, d:1} {YawAddError_dist_ampl} {0} {YawAddError_dist_freq} {100};
+{2} {Remove Disturbance, d:2} {YawAddError_dist_ampl} {0} {YawAddError_dist_freq} {100};
+{3} {Inject Disturbance, d:1} {YawAddError_dist_ampl} {0.0001} {YawAddError_dist_freq} {100};
+{4} {Inject Disturbance, d:2} {YawAddError_dist_ampl} {0.00013} {YawAddError_dist_freq} {100};
