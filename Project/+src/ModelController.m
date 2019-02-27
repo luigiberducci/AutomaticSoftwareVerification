@@ -14,22 +14,38 @@ classdef ModelController
     
     properties
         model
+        currentState
+        interval
+        numInterval
     end
     
     methods
-        function obj = ModelController(model)
+        function obj = ModelController(model, interval)
             %MODELCONTROLLER Construct an instance of this class
-            obj.model = model;
+            epsilon = 1e-3;
+            obj.model = model;            
+
+            set_param(model,'SaveFinalState','on','FinalStateName',...
+            'myOperPoint','SaveCompleteFinalSimState','on');
+            simOut = sim(model, 'StopTime', string(epsilon));
+            obj.currentState = simOut.get('myOperPoint');
+            
+            obj.interval = interval;
+            obj.numInterval = 0;
         end
         
         function obj = setInput(obj, u)
             %% SETINPUT Change the current input signals with `u`.
-            obj = obj;
+            set_param(obj.model+"/Throttle", "Value", string(u(1)));
+            set_param(obj.model+"/Brake", "Value", string(u(2)));
         end
         
         function obj = step(obj)
             %% STEP Step the simulation to the next time stage.
-            obj = obj;
+            obj.numInterval = obj.numInterval + 1;
+            set_param(obj.model, 'LoadInitialState', 'on',...
+                      'InitialState', 'myOperPoint');
+            sim(obj.model, 'StopTime', (obj.numInterval)*obj.interval);
         end
         
         function val = visit(obj, u)
