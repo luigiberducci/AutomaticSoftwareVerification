@@ -5,6 +5,7 @@ global storedState;
 global interval;
 global numInterval;
 global paramNameValueStruct;
+global inputSignal;
 
 SUV_and_robustness_eval = 'automatic_transmission_model';        
 storedState             = 'state';
