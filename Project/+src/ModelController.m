@@ -14,24 +14,42 @@ classdef ModelController
     
     properties
         model
-        currentState
+        xInitial
+        currentSnapshotTime
         interval
         numInterval
+        lastRobustness;
+        paramNameValStruct;
     end
     
     methods
         function obj = ModelController(model, interval)
             %MODELCONTROLLER Construct an instance of this class
-            epsilon = 1e-3;
-            obj.model = model;            
-
-            set_param(model,'SaveFinalState','on','FinalStateName',...
-            'myOperPoint','SaveCompleteFinalSimState','on');
-            simOut = sim(model, 'StopTime', string(epsilon));
-            obj.currentState = simOut.get('myOperPoint');
-            
-            obj.interval = interval;
+            obj.model = model;        
+            obj.interval    = interval;
             obj.numInterval = 0;
+            epsilon     = 1e-3;
+            
+            load_system(model)
+
+            obj.paramNameValStruct.SaveFinalState            = 'on';
+            obj.paramNameValStruct.SaveCompleteFinalSimState = 'on';
+            obj.paramNameValStruct.FinalStateName            = 'xFinal';
+            obj.paramNameValStruct.LoadInitialState          = 'off';
+            %% IMPORTANT the object must be called simCtrl in the workspace
+            obj.paramNameValStruct.InitialState              = 'simCtrl.xInitial';
+            obj.paramNameValStruct.StopTime                  = string(epsilon);
+            obj.paramNameValStruct.SaveOutput                = 'on';
+            obj.paramNameValStruct.OutputSaveName            = 'Robustness';
+            
+            obj = obj.setInput([0 0]);
+            
+            simOut = sim(obj.model, obj.paramNameValStruct);
+            obj.lastRobustness = simOut.Robustness.signals.values(end);
+            obj.xInitial = simOut.get('xFinal');
+            obj.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
+            obj.numInterval = 0;
+            obj.paramNameValStruct.LoadInitialState = 'on';
         end
         
         function obj = setInput(obj, u)
@@ -43,27 +61,30 @@ classdef ModelController
         function obj = step(obj)
             %% STEP Step the simulation to the next time stage.
             obj.numInterval = obj.numInterval + 1;
-            set_param(obj.model, 'LoadInitialState', 'on',...
-                      'InitialState', 'myOperPoint');
-            sim(obj.model, 'StopTime', (obj.numInterval)*obj.interval);
+            time_slice = obj.currentSnapshotTime + obj.interval;
+            obj.paramNameValStruct.StopTime = sprintf('%ld', time_slice);
+
+            simOut = sim(obj.model, obj.paramNameValStruct);
+            obj.xInitial = simOut.get('xFinal');
+            obj.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
+            obj.lastRobustness = simOut.Robustness.signals.values(end);
         end
         
         function val = visit(obj, u)
             %% VISIT Visit next state and return the robustness value.
             %  Set input vector `u` and simulate a time stage, then return
             %  the robustness value `val`.
+            %% TODO
             val = 0;
         end
         
         function obj = reset(obj)
             %% RESET Reset the simulation to an initial state.
-            obj = obj;
-        end
-        
-        function state = getInitialState(obj)
-            %% GETINITIALSTATE Compute an initial state.
-            %  The basic implementation is random.
-            state = 0;
+            clear obj.xInitial;
+            clear obj.currentSnapshotTime;
+            clear obj.bool;
+            
+            obj = src.ModelController(obj.model, obj.interval);
         end
     end
 end
