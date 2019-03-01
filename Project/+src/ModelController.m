@@ -76,8 +76,11 @@ classdef ModelController
             %% VISIT Visit next state and return the robustness value.
             %  Set input vector `u` and simulate a time stage, then return
             %  the robustness value `val`.
-            
-            val = 0;
+            originalInput = obj.currentInput;
+            obj = obj.setInput(u);
+            obj = obj.step();
+            obj.setInput(originalInput);
+            val = obj.lastRobustness;
         end
         
         function obj = reset(obj)
