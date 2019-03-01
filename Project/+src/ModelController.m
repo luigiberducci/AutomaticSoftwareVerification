@@ -16,10 +16,11 @@ classdef ModelController
         model
         xInitial
         currentSnapshotTime
+        currentInput
         interval
         numInterval
         lastRobustness;
-        paramNameValStruct;
+        paramNameValStruct
     end
     
     methods
@@ -54,6 +55,7 @@ classdef ModelController
         
         function obj = setInput(obj, u)
             %% SETINPUT Change the current input signals with `u`.
+            obj.currentInput = u;
             set_param(obj.model+"/Throttle", "Value", string(u(1)));
             set_param(obj.model+"/Brake", "Value", string(u(2)));
         end
@@ -74,16 +76,12 @@ classdef ModelController
             %% VISIT Visit next state and return the robustness value.
             %  Set input vector `u` and simulate a time stage, then return
             %  the robustness value `val`.
-            %% TODO
+            
             val = 0;
         end
         
         function obj = reset(obj)
             %% RESET Reset the simulation to an initial state.
-            clear obj.xInitial;
-            clear obj.currentSnapshotTime;
-            clear obj.bool;
-            
             obj = src.ModelController(obj.model, obj.interval);
         end
     end
