@@ -20,7 +20,7 @@ classdef HillClimbing
             % pi = randperm(length(X)) % generate random permutation for neigbours
             obj.T = T(:); %(pi);
             obj.B = B(:); %(pi);
-            obj.numNeigbours = size(obj.T)
+            obj.numNeigbours = prod(size(obj.T));
         end
 
         function [currentModel, robustness, trace] = run(obj)
@@ -39,7 +39,7 @@ classdef HillClimbing
                         % go to neigbourd
                         currentModel.setInput(disturbance);
                         currentModel = currentModel.step();
-                        robustness = r;
+                        robustness = r
                         moveFound = true;
                         trace = [trace ; disturbance] % update trace
                     end
