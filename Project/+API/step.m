@@ -6,4 +6,4 @@ paramNameValStruct.StopTime = sprintf('%ld', time_slice);
 simOut = sim(SUV_and_robustness_eval, paramNameValStruct);
 xInitial = simOut.get('xFinal');
 currentSnapshotTime = simOut.get('xFinal').snapshotTime;
-bool = simOut.get(property_module_name);
+bool = simOut.Robustness.signals.values(end);

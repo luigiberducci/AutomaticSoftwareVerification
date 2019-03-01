@@ -8,7 +8,6 @@ global paramNameValueStruct;
 
 SUV_and_robustness_eval = 'automatic_transmission_model';        
 storedState             = 'state';
-property_module_name    = 'Output';
 interval    = 10;
 numInterval = 0;
 epsilon     = 1e-3;
@@ -21,10 +20,12 @@ paramNameValStruct.FinalStateName            = 'xFinal';
 paramNameValStruct.LoadInitialState          = 'off';
 paramNameValStruct.InitialState              = 'xInitial';
 paramNameValStruct.StopTime                  = string(epsilon);
+paramNameValStruct.SaveOutput                = 'on';
+paramNameValStruct.OutputSaveName            = 'Robustness';
 
 simOut = sim(SUV_and_robustness_eval, paramNameValStruct);
-bool = simOut.get(property_module_name);
-currentState = simOut.get('xFinal');
+bool   = simOut.Robustness.signals.values(end);
+xInitial = simOut.get('xFinal');
 currentSnapshotTime = simOut.get('xFinal').snapshotTime;
 
 paramNameValStruct.LoadInitialState = 'on';
