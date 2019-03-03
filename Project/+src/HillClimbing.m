@@ -25,31 +25,37 @@ classdef HillClimbing
             obj.H = H;
         end
 
-        function [currentModel, robustness, trace] = run(obj)
+        function [currentModel, robustness, trace] = run(obj, restarts)
             depth = 0;
-            trace = []; % init trace that minimizes robustness
-            currentModel = obj.model; % set model to initial state of the problem
-            robustness = currentModel.lastRobustness;
-            while depth < obj.H / obj.model.interval
-                moveFound = false;
-                i = 0; % seen neigbours
-                pi = randperm(length(obj.T)); % generate random permutation for neigbours
-                while moveFound == false & i < obj.numNeigbours
-                    i = i + 1; % consume next neigbours
-                    disturbance = [obj.T(pi(i)) obj.B(pi(i))];
-                    r = currentModel.visit(disturbance);
-                    if r <= robustness % a not worst neigbourd has being found
-                        % go to neigbourd
-                        currentModel.setInput(disturbance);
-                        currentModel = currentModel.step();
-                        robustness = r;
-                        moveFound = true;
-                        trace = [trace ; disturbance]; % update trace
-                        depth = depth + 1;
+            trial = restarts;
+            numInterval = obj.H / obj.model.interval;
+            while depth < numInterval & trial > 0
+                depth = 0; % reset depth for following trials
+                trial = trial - 1
+                trace = []; % init trace that minimizes robustness
+                currentModel = obj.model; % set model to initial state of the problem
+                robustness = currentModel.lastRobustness;
+                while depth < numInterval
+                    moveFound = false;
+                    i = 0; % seen neigbours
+                    pi = randperm(length(obj.T)); % generate random permutation for neigbours
+                    while moveFound == false & i < obj.numNeigbours
+                        i = i + 1; % consume next neigbours
+                        disturbance = [obj.T(pi(i)) obj.B(pi(i))];
+                        r = currentModel.visit(disturbance);
+                        if r <= robustness % a not worst neigbourd has being found
+                            % go to neigbourd
+                            currentModel.setInput(disturbance);
+                            currentModel = currentModel.step();
+                            robustness = r;
+                            moveFound = true;
+                            trace = [trace ; disturbance] % update trace
+                            depth = depth + 1;
+                        end
                     end
-                end
-                if moveFound == false 
-                    return
+                    if moveFound == false 
+                        return
+                    end
                 end
             end
         end
