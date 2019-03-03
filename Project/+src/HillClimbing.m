@@ -6,11 +6,12 @@ classdef HillClimbing
         model
         T
         B
+        H
         numNeigbours
     end
     
     methods
-        function obj = HillClimbing(model, t, b)
+        function obj = HillClimbing(model, t, b, H)
             %% HillClimbing constructor
             % model is an instance of ModelController
             % t is a vector with possible disturbances for Throttle
@@ -21,13 +22,15 @@ classdef HillClimbing
             obj.T = T(:); %(pi);
             obj.B = B(:); %(pi);
             obj.numNeigbours = prod(size(obj.T));
+            obj.H = H;
         end
 
         function [currentModel, robustness, trace] = run(obj)
+            depth = 0;
             trace = []; % init trace that minimizes robustness
             currentModel = obj.model; % set model to initial state of the problem
             robustness = currentModel.lastRobustness;
-            while true
+            while depth < obj.H / obj.model.interval
                 moveFound = false;
                 i = 0; % seen neigbours
                 pi = randperm(length(obj.T)); % generate random permutation for neigbours
@@ -39,9 +42,10 @@ classdef HillClimbing
                         % go to neigbourd
                         currentModel.setInput(disturbance);
                         currentModel = currentModel.step();
-                        robustness = r
+                        robustness = r;
                         moveFound = true;
-                        trace = [trace ; disturbance] % update trace
+                        trace = [trace ; disturbance]; % update trace
+                        depth = depth + 1;
                     end
                 end
                 if moveFound == false 
