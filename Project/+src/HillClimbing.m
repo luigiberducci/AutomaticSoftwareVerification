@@ -3,7 +3,7 @@ classdef HillClimbing
     %  The explaination is written in the header of ModelController.
     
     properties
-        model
+        mdlCtrl
         T
         B
         H
@@ -11,50 +11,63 @@ classdef HillClimbing
     end
     
     methods
-        function obj = HillClimbing(model, t, b, H)
+        function obj = HillClimbing(modelCtrl, t, b, H)
             %% HillClimbing constructor
-            % model is an instance of ModelController
-            % t is a vector with possible disturbances for Throttle
-            % b is a vector with possible disturbances for Brake
-            obj.model = model;
+            % `model` is an instance of ModelController
+            % `t` is a vector with possible values for Throttle signal
+            % `b` is a vector with possible values for Brake signal
+            obj.mdlCtrl = modelCtrl;
             [T,B] = meshgrid(t,b); % cartesian product of disturbances
-            % pi = randperm(length(X)) % generate random permutation for neigbours
-            obj.T = T(:); %(pi);
-            obj.B = B(:); %(pi);
-            obj.numNeigbours = prod(size(obj.T));
+            obj.T = T(:);
+            obj.B = B(:);
+            obj.numNeigbours = numel(obj.T);
             obj.H = H;
         end
 
-        function [currentModel, robustness, trace] = run(obj, restarts)
-            depth = 0;
+        function [currentModel, bestRobustness, trace] = run(obj, restarts)
             trial = restarts;
-            numInterval = obj.H / obj.model.interval;
-            while depth < numInterval & trial > 0
-                depth = 0; % reset depth for following trials
-                trial = trial - 1
+            totNumIntervals = obj.H / obj.mdlCtrl.interval;
+            currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
+            while trial > 0
+                currentModel = currentModel.reset();
                 trace = []; % init trace that minimizes robustness
-                currentModel = obj.model; % set model to initial state of the problem
-                robustness = currentModel.lastRobustness;
-                while depth < numInterval
+                allRobs = [];
+                trial = trial - 1;
+                bestRobustness = currentModel.lastRobustness;
+                
+                % DEBUG
+                fprintf("[Info] Remaining Trials: %d\n", trial);
+                
+                while currentModel.numInterval < totNumIntervals
                     moveFound = false;
-                    i = 0; % seen neigbours
-                    pi = randperm(length(obj.T)); % generate random permutation for neigbours
-                    while moveFound == false & i < obj.numNeigbours
-                        i = i + 1; % consume next neigbours
-                        disturbance = [obj.T(pi(i)) obj.B(pi(i))];
-                        r = currentModel.visit(disturbance);
-                        if r <= robustness % a not worst neigbourd has being found
+                    iAction = 0; % incremental index of actions
+                    prm = randperm(length(obj.T)); % generate random permutation for neigbours
+                    while moveFound == false && iAction < obj.numNeigbours
+                        iAction = iAction + 1; % consume next neigbours
+                        currentInput = [obj.T(prm(iAction)) obj.B(prm(iAction))];
+                        r = currentModel.visit(currentInput);
+                        if r <= bestRobustness % a not worst neigbourd has being found
                             % go to neigbourd
-                            currentModel.setInput(disturbance);
+                            currentModel.setInput(currentInput);
                             currentModel = currentModel.step();
-                            robustness = r;
+                            bestRobustness = r;
+                            if bestRobustness <= 0
+                                return
+                            end
                             moveFound = true;
-                            trace = [trace ; disturbance] % update trace
-                            depth = depth + 1;
+                            trace = [trace; currentInput]; % extend trace
+                            allRobs = [allRobs; bestRobustness]; % extend robustness trace
+
+                            
+                            %Debug
+                            fprintf("[Info] Best Robustness: %f\n\n", bestRobustness);
+                            fprintf("Current Trace:\n");
+                            fprintf("  Thr:\tBrk:\tRob:\n");
+                            disp([trace allRobs]);
                         end
                     end
                     if moveFound == false 
-                        return
+                        break
                     end
                 end
             end
