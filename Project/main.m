@@ -1,18 +1,21 @@
 % model controller
 tic;
-model = 'automatic_transmission_model_S1';
+%model = 'automatic_transmission_model_S1';
 model = 'automatic_transmission_model_S2';
 simCtrl = src.ModelController(model, 5);
 init_time = toc;
 
 % disturbances
 tic;
+% TODO: parametrize discretization of input signals.
 T = 0 : 10 : 100;
 B = 0 : 30 : 350;
 
-H = 30;
-hillClmb = src.HillClimbing(simCtrl, T, B, H);
-[currentModel, robustness, trace] = hillClmb.run(10);
+horizon = 30;
+restarts = 5;
+hillClmb = src.HillClimbing(simCtrl, T, B, horizon);
+[currentModel, robustness, trace] = hillClmb.run(restarts);
+
 hc_time = toc;
 
 fprintf("Robustness: %f\n", robustness);
