@@ -1,19 +1,28 @@
 % model controller
 tic;
-%model = 'automatic_transmission_model_S1';
-model = 'automatic_transmission_model_S2';
+model = 'automatic_transmission_model_S1';
+%model = 'automatic_transmission_model_S2';
 simCtrl = src.ModelController(model, 5);
 init_time = toc;
 
-% disturbances
+% Input definition
 tic;
-% TODO: parametrize discretization of input signals.
-T = 0 : 10 : 100;
-B = 0 : 30 : 350;
+ThrottleLimInf = 0;
+BrakeLimInf = 0;
+ThrottleLimSup = 100;
+BrakeLimSup = 325;
+
+numSamplesThrottle = 10;
+numSamplesBrake    = 11;
+
+inLimInf = [ThrottleLimInf BrakeLimInf];
+inLimSup = [ThrottleLimSup BrakeLimSup];
+numInDisc   = [numSamplesThrottle numSamplesBrake];
 
 horizon = 30;
 restarts = 5;
-hillClmb = src.HillClimbing(simCtrl, T, B, horizon);
+
+hillClmb = src.HillClimbing(simCtrl, inLimInf, inLimSup, numInDisc, horizon);
 [currentModel, robustness, trace] = hillClmb.run(restarts);
 
 hc_time = toc;

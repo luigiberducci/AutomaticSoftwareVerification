@@ -4,27 +4,32 @@ classdef HillClimbing
     
     properties
         mdlCtrl
-        T
-        B
+        inLimInf
+        inLimSup
+        numInputSamples
         H
         numNeigbours
     end
     
     methods
-        function obj = HillClimbing(modelCtrl, t, b, H)
+        function obj = HillClimbing(modelCtrl, inLimInf, inLimSup, numInDisc, timeHorizon)
             %% HillClimbing constructor
             % `model` is an instance of ModelController
-            % `t` is a vector with possible values for Throttle signal
-            % `b` is a vector with possible values for Brake signal
+            % `inLimInf` is a vector of lowerbound of each input signal
+            % `inLimSup` is a vector of upperbound of each input signal
+            % `numInDisc` is a vector of number of values to sample for
+            %             each input signal
             obj.mdlCtrl = modelCtrl;
-            [T,B] = meshgrid(t,b); % cartesian product of disturbances
-            obj.T = T(:);
-            obj.B = B(:);
-            obj.numNeigbours = numel(obj.T);
-            obj.H = H;
+            obj.inLimInf = inLimInf;
+            obj.inLimSup = inLimSup;
+            obj.numInputSamples = numInDisc;
+            
+            obj.numNeigbours = prod(obj.numInputSamples);
+            obj.H = timeHorizon;
         end
 
         function [currentModel, bestRobustness, trace] = run(obj, restarts)
+            [T, B] = obj.computeDiscreteInputSignal();
             trial = restarts;
             totNumIntervals = obj.H / obj.mdlCtrl.interval;
             currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
@@ -41,19 +46,20 @@ classdef HillClimbing
                 while currentModel.numInterval < totNumIntervals
                     moveFound = false;
                     iAction = 0; % incremental index of actions
-                    prm = randperm(length(obj.T)); % generate random permutation for neigbours
+                    Tprm = randperm(length(T)); % generate random permutation for neigbours
+                    Bprm = randperm(length(B)); % generate random permutation for neigbours
                     while moveFound == false && iAction < obj.numNeigbours
                         iAction = iAction + 1; % consume next neigbours
-                        currentInput = [obj.T(prm(iAction)) obj.B(prm(iAction))];
+                        currentInput = [T(Tprm(iAction)) B(Bprm(iAction))];
                         r = currentModel.visit(currentInput);
                         if r <= bestRobustness % a not worst neigbourd has being found
                             % go to neigbourd
                             currentModel.setInput(currentInput);
                             currentModel = currentModel.step();
                             bestRobustness = r;
-                            if bestRobustness <= 0
-                                return
-                            end
+                            %if bestRobustness <= 0
+                            %    return
+                            %end
                             moveFound = true;
                             trace = [trace; currentInput]; % extend trace
                             allRobs = [allRobs; bestRobustness]; % extend robustness trace
@@ -71,6 +77,14 @@ classdef HillClimbing
                     end
                 end
             end
+        end
+        
+        function [U1 U2] = computeDiscreteInputSignal(obj)
+            % To have `k` discretization, we have to divide by `k-1`. In
+            % this way, we include lower/upperbound as legal input value.
+            inputStep = (obj.inLimSup - obj.inLimInf) ./ (obj.numInputSamples-1);
+            U1 = obj.inLimInf(1) : inputStep(1) : obj.inLimSup(1);
+            U2 = obj.inLimInf(2) : inputStep(2) : obj.inLimSup(2);
         end
 
     end %methods

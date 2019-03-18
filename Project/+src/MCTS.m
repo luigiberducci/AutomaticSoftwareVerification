@@ -1,14 +1,38 @@
 classdef MCTS
     properties
+        %Tree properties
         nodes
         actions
         availID
+        %Model properties
+        modelFile
+        modelCtrl
+        inputLimInf
+        inputLimSup
+        numInputDisc
+        %Search algo properties
+        searchAlgo          %TODO Create a factory
+        %Simulation properties
+        simTimeHorizon
+        numCtrlPoints
+        numInputRegion
     end
     methods
-        function obj = MCTS(actionIDs)
+        function obj = MCTS(modelFile, inLimInf, inLimSup, numInDisc, numInRegion, simTimeHorizon, numCtrlPnts)
+            %Initialize model controller
+            obj.modelFile = modelFile;
+            interval = obj.computeTimeDiscretization(simTimeHorizon, numCtrlPnts);
+            obj.modelCtrl = src.ModelController(obj.modelFile, interval);
+            
+            %Initialize search algorithm
+            obj.inputLimInf = inLimInf;
+            obj.inputLimSup = inLimSup;
+            obj.numInputDisc = numInDisc;
+            obj.searchAlgo = src.SearchAlgo();
+            
             %Create root node
             obj.availID = 1;
-            root = myNode(obj.availID, 0, 0); %The root is the only node with parent 0
+            root = MCNode(obj.availID, 0, 0); %The root is the only node with parent 0
             obj.nodes = [root];
             obj.actions = actionIDs;
             %Increment next available node identifier
@@ -39,7 +63,7 @@ classdef MCTS
         function obj = expansion(obj, nodeID)
             node = obj.nodes(nodeID);
             for action = obj.actions
-                child = myNode(obj.availID, nodeID, action);
+                child = MCNode(obj.availID, nodeID, action);
                 obj.nodes = [obj.nodes child];
                 obj.availID = obj.availID+1;
             end
@@ -70,6 +94,10 @@ classdef MCTS
             if not(n==0)
                 ucb = V + c*sqrt(log(N)/n);
             end
+        end
+        
+        function int = computeTimeDiscretization(obj, timeHorizon, numCtrlPnts)
+            int = timeHorizon/numCtrlPnts;
         end
     end
 end
