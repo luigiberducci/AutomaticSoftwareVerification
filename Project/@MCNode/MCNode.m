@@ -1,4 +1,4 @@
-classdef myNode
+classdef MCNode
     %NODE Node of Monte Carlo Tree   
     properties
         nodeID
@@ -9,7 +9,7 @@ classdef myNode
     end
     
     methods
-        function obj = myNode(id, parent, act)
+        function obj = MCNode(id, parent, act)
             obj.nodeID = id;
             obj.action = act;
             obj.score = 0;
