@@ -28,13 +28,13 @@ classdef MCTS
             obj.inputLimInf = inLimInf;
             obj.inputLimSup = inLimSup;
             obj.numInputDisc = numInDisc;
-            obj.searchAlgo = src.SearchAlgo();
+            % obj.searchAlgo = src.SearchAlgo();
             
             %Create root node
             obj.availID = 1;
             root = MCNode(obj.availID, 0, 0); %The root is the only node with parent 0
             obj.nodes = [root];
-            obj.actions = actionIDs;
+            % obj.actions = actionIDs;
             %Increment next available node identifier
             obj.availID = obj.availID + 1;
         end
@@ -98,6 +98,30 @@ classdef MCTS
         
         function int = computeTimeDiscretization(obj, timeHorizon, numCtrlPnts)
             int = timeHorizon/numCtrlPnts;
+        end
+
+        function obj = step(obj)
+        end
+
+        function [T, B] = regionToSignal(obj, region)
+            inLimInf = region * numInputRegion
+            inLimSup = (region + 1) * numInputRegion
+            [T B] = obj.computeDiscreteInputSignal(inLimInf, inLimSup, obj.numInputDisc)
+        end
+
+        function region = getRandomRegion(obj)
+            for i = 1:length(obj.numInputRegion)
+                region(i) = randi([1 obj.numInputRegion(i)])
+            end
+        end
+
+        % TODO generalize to vector
+        function [U1 U2] = computeDiscreteInputSignal(obj, inLimInf, inLimSup, numInputSamples)
+            % To have `k` discretization, we have to divide by `k-1`. In
+            % this way, we include lower/upperbound as legal input value.
+            inputStep = (inLimSup - inLimInf) ./ (numInputSamples-1);
+            U1 = inLimInf(1) : inputStep(1) : inLimSup(1);
+            U2 = inLimInf(2) : inputStep(2) : inLimSup(2);
         end
     end
 end

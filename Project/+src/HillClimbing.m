@@ -79,6 +79,7 @@ classdef HillClimbing
             end
         end
         
+        % TODO moved to MCTS
         function [U1 U2] = computeDiscreteInputSignal(obj)
             % To have `k` discretization, we have to divide by `k-1`. In
             % this way, we include lower/upperbound as legal input value.
