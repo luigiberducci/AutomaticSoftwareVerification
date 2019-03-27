@@ -50,7 +50,8 @@ classdef HillClimbing
                     Bprm = randperm(length(B)); % generate random permutation for neigbours
                     while moveFound == false && iAction < obj.numNeigbours
                         iAction = iAction + 1; % consume next neigbours
-                        currentInput = [T(Tprm(iAction)) B(Bprm(iAction))];
+                        [it, ib] = ind2sub([length(T) length(B)], iAction);
+                        currentInput = [T(Tprm(it)) B(Bprm(ib))];
                         r = currentModel.visit(currentInput);
                         if r <= bestRobustness % a not worst neigbourd has being found
                             % go to neigbourd
@@ -64,12 +65,11 @@ classdef HillClimbing
                             trace = [trace; currentInput]; % extend trace
                             allRobs = [allRobs; bestRobustness]; % extend robustness trace
 
-                            
                             %Debug
                             fprintf("[Info] Best Robustness: %f\n\n", bestRobustness);
-                            fprintf("Current Trace:\n");
-                            fprintf("  Thr:\tBrk:\tRob:\n");
-                            disp([trace allRobs]);
+                            %fprintf("Current Trace:\n");
+                            %fprintf("  Thr:\tBrk:\tRob:\n");
+                            %disp([trace allRobs]);
                         end
                     end
                     if moveFound == false 

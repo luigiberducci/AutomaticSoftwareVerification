@@ -62,6 +62,7 @@ classdef ModelController
         
         function obj = step(obj)
             %% STEP Step the simulation to the next time stage.
+            simCtrl = obj;
             obj.numInterval = obj.numInterval + 1;
             time_slice = obj.currentSnapshotTime + obj.interval;
             obj.paramNameValStruct.StopTime = sprintf('%ld', time_slice);
