@@ -1,9 +1,9 @@
 % model controller
-tic;
+%tic;
 model = 'automatic_transmission_model_S1';
 %model = 'automatic_transmission_model_S2';
-simCtrl = src.ModelController(model, 5);
-init_time = toc;
+%simCtrl = src.ModelController(model, 5);
+%init_time = toc;
 
 % Input definition
 tic;
@@ -28,3 +28,6 @@ simTimeHorizon = 30;
 numCtrlPnts = 5;
 
 mcts = src.MCTS(model, inLimInf, inLimSup, numInDisc, numInRegion, simTimeHorizon, numCtrlPnts)
+nodeID = mcts.selection();
+mcts = mcts.expansion(nodeID);
+mcts = mcts.preRollout(nodeID);

@@ -34,7 +34,7 @@ classdef HillClimbing
             totNumIntervals = obj.H / obj.mdlCtrl.interval;
             currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
             while trial > 0
-                currentModel = currentModel.reset();
+                currentModel = obj.mdlCtrl;
                 trace = []; % init trace that minimizes robustness
                 allRobs = [];
                 trial = trial - 1;

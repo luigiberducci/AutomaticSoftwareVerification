@@ -10,6 +10,8 @@ classdef MCTS
         inputLimInf
         inputLimSup
         numInputDisc
+        quantumSize
+        numInRegions
         %Search algo properties
         searchAlgo          %TODO Create a factory
         %Simulation properties
@@ -18,31 +20,33 @@ classdef MCTS
         numInputRegion
     end
     methods
-        function obj = MCTS(modelFile, inLimInf, inLimSup, numInDisc, numInRegion, simTimeHorizon, numCtrlPnts)
+        function obj = MCTS(modelFile, inLimInf, inLimSup, numInDisc, numInRegions, simTimeHorizon, numCtrlPnts)
+            %% TODO Commentare segnatura input
             %Initialize model controller
             obj.modelFile = modelFile;
             interval = obj.computeTimeDiscretization(simTimeHorizon, numCtrlPnts);
             obj.modelCtrl = src.ModelController(obj.modelFile, interval);
             
-            %Initialize search algorithm
+            %Initialize search algorithm parameters
             obj.inputLimInf = inLimInf;
             obj.inputLimSup = inLimSup;
             obj.numInputDisc = numInDisc;
-            % obj.searchAlgo = src.SearchAlgo();
+            obj.quantumSize = (inLimSup - inLimInf) ./ numInDisc;
+            obj.numInRegions = numInRegions;
             
             %Create root node
             obj.availID = 1;
-            root = MCNode(obj.availID, 0, 0); %The root is the only node with parent 0
+            root = MCNode(obj.availID, 0, [-1 -1], [-1 -1]); %The root is the only node with parent 0
             obj.nodes = [root];
-            % obj.actions = actionIDs;
             %Increment next available node identifier
             obj.availID = obj.availID + 1;
         end
         
-        function nodeID = selection(obj)
-            nodeID = 1;     %root
-            node = obj.nodes(nodeID);
-            children = obj.getChildren(nodeID);
+        function curNodeID = selection(obj)
+            curNodeID = 1;     %root
+            obj.modelCtrl = obj.modelCtrl.reset();  %Reset to t0
+            node = obj.nodes(curNodeID);
+            children = obj.getChildren(curNodeID);
             while not(isempty(children))
                 min_val = Inf;
                 min_child = 1;
@@ -54,22 +58,61 @@ classdef MCTS
                         min_child = childID;
                     end
                 end
-                nodeID = min_child;
-                nodeCnt = obj.nodes(nodeID);
-                children = obj.getChildren(nodeID);
+                %Pick the selected node and step ahed the simulation
+                curNodeID = min_child;
+                
+                u = obj.chooseActionFromNodeID(curNodeID);
+                obj.modelCtrl = obj.modelCtrl.setInput(u);
+                obj.modelCtrl = obj.modelCtrl.step();
+                children = obj.getChildren(curNodeID);
+            end
+        end
+        
+        function u = chooseActionFromNodeID(obj, nodeID)
+            curNode = obj.nodes(nodeID);
+            regionInf = curNode.regionInf;
+            regionSup = curNode.regionSup;
+                
+            u = obj.chooseAction(regionInf, regionSup);
+        end
+        
+        function u = chooseAction(obj, regionInf, regionSup)
+            for i = 1:length(regionInf)
+                u(i) = randsample([regionInf(i) : obj.quantumSize(i) : regionSup(i)], 1);
             end
         end
         
         function obj = expansion(obj, nodeID)
-            node = obj.nodes(nodeID);
-            for action = obj.actions
-                child = MCNode(obj.availID, nodeID, action);
+            for actionID = 1:prod(obj.numInRegions)
+                [it,ib] = ind2sub(obj.numInRegions, actionID);
+                inLimInf = [it*obj.quantumSize(1) ib*obj.quantumSize(2)];
+                inLimSup = [(it+1)*obj.quantumSize(1) (ib+1)*obj.quantumSize(2)];
+                child = MCNode(obj.availID, nodeID, inLimInf, inLimSup);
                 obj.nodes = [obj.nodes child];
                 obj.availID = obj.availID+1;
             end
         end
         
-        function rollout(obj)
+        function obj = preRollout(obj, nodeID)
+            node = obj.nodes(nodeID);
+            children = obj.getChildren(nodeID);
+            ucb = zeros(size(children));
+            for i = 1:length(children)
+                childID = children(i);
+                child = obj.nodes(childID);
+                ucb(i) = obj.computeUCB(child);
+            end
+            % Choose min child
+            [~, min_id] = min(ucb);
+            % Move to child
+            u = obj.chooseActionFromNodeID(children(min_id));
+            obj.modelCtrl = obj.modelCtrl.setInput(u);
+            obj.modelCtrl = obj.modelCtrl.step();
+        end
+        
+        function rollout(obj, nodeID)
+            searchAlgo = src.HillClimbing(obj.modelCtrl, obj.inLimInf, obj.inLimSup, obj.numInputDisc, obj.simTimeHorizon);
+            
         end
         
         function backpropagation(obj)
@@ -80,7 +123,7 @@ classdef MCTS
         end
         
         function ids = getChildren(obj, nodeID)
-            ids = find(obj.nodes.parentID==nodeID);
+            ids = find([obj.nodes.parentID]==nodeID);
         end
         
         function ucb = computeUCB(obj, node)
