@@ -52,7 +52,7 @@ while budget>0
     [rob, trace] = mcts.rollout(simCtrl);
     bestRobustness = min(bestRobustness, rob);
     % Check falsification
-    if rob<=-100
+    if rob<=0
         fprintf("FALSIFICATION: %d\n", rob);
         disp(trace);
         return;
