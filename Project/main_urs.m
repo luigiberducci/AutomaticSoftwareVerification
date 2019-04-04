@@ -1,10 +1,11 @@
 %% Initialization
+t0 = tic;
 %Model parameters
 model = 'automatic_transmission_model_S1';  %Model filename
 %model = 'automatic_transmission_model_S2';
 
 %Uniform Random Sampling (URS) parameters
-MAX_NUM_TRACE = 5;      %Bound on num of trace to be simulated
+MAX_NUM_TRACE = 2000;  %Bound on num of trace to be simulated
 numSimulatedTraces = 0; %Number of trace currently simulated
 
 %Simulation parameters
@@ -29,6 +30,8 @@ bestRobustness = Inf;   %Robustness has to be minimized, then init as Inf
 bestTrace = zeros(numCtrlPnts, length(inLimInf));
 
 %Loop untile falsification or max num traces
+t_init = toc(t0);
+t0 = tic;
 while numSimulatedTraces < MAX_NUM_TRACE
     %Debug
     fprintf("[Info] Remaining trace: %d\n", (MAX_NUM_TRACE-numSimulatedTraces));
@@ -39,20 +42,20 @@ while numSimulatedTraces < MAX_NUM_TRACE
         bestRobustness = rob;
         bestTrace = trace;
     end
+    %Update simulations counter
+    numSimulatedTraces = numSimulatedTraces + 1;
     
     % Check falsification
     if rob<=0
         fprintf("FALSIFICATION: %d\n", rob);
         disp(trace);
-        return;
-    end
-    
-    %Reduce budget
-    numSimulatedTraces = numSimulatedTraces + 1;
+        break;
+    end    
 end
+t_urs = toc(t0);
 
 %Print result
-printResult(numSimulatedTraces, bestRobustness, bestTrace);
+printResult(numSimulatedTraces, bestRobustness, bestTrace, t_init, t_urs);
 
 %% Helper Functions
 function [inLimInf, inLimSup, numInDisc] = defineInputDomains()
@@ -70,9 +73,12 @@ function [inLimInf, inLimSup, numInDisc] = defineInputDomains()
     numInDisc   = [numSamplesThrottle numSamplesBrake];
 end
 
-function printResult(numSimulatedTraces, bestRobustness, bestTrace)
-    fprintf("[Info] Simulated trace: %d\n", numSimulatedTraces);
-    fprintf("[Info] Best Robustness: %d\n", bestRobustness);
+function printResult(numSimulatedTraces, bestRobustness, bestTrace, initTime, elapsedTime)
+    fprintf("************* RESULTS *************\n");
+    fprintf("[Info] Initialization time:\t%f seconds\n", initTime);
+    fprintf("[Info] Simulation time:\t\t%f seconds\n", elapsedTime);
+    fprintf("[Info] Simulated trace:\t\t%d\n", numSimulatedTraces);
+    fprintf("[Info] Best Robustness:\t\t%f\n", bestRobustness);
     fprintf("[Info] Best Trace:\n");
     disp(bestTrace);
 end

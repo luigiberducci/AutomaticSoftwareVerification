@@ -44,8 +44,7 @@ classdef MCTS
             obj.nodes = [root];
             obj.plot()
 
-
-            %Increment next available node identifier
+            %Increment next availablplote node identifier
             obj.availID = obj.availID + 1;
         end
         
@@ -176,8 +175,11 @@ classdef MCTS
             for i=1:length(x)
                 nodeID = i;
                 node = obj.nodes(nodeID);
-                label = sprintf("ID: %d\nT: [%.2f, %.2f]\nB: [%.2f, %.2f]\nUCB: %.2f\nn: %.0f",...
-                nodeID, node.regionInf(2), node.regionSup(1), node.regionInf(2), node.regionSup(2), node.score, node.n);
+                
+                %label = sprintf("ID: %d\nT: [%.2f, %.2f]\nB: [%.2f, %.2f]\nUCB: %.2f\nn: %.0f",...
+                %nodeID, node.regionInf(2), node.regionSup(1), node.regionInf(2), node.regionSup(2), node.score, node.n);
+                label = sprintf("UCB: %.2f\nn: %.0f", node.score, node.n);
+                
                 text_shift_x = 0;
                 text_shift_y = (1+rem(nodeID,2))/20;
                 text(x(i)+text_shift_x, y(i)+text_shift_y, label);

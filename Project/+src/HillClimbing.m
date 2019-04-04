@@ -58,9 +58,7 @@ classdef HillClimbing
                             currentModel.setInput(currentInput);
                             currentModel = currentModel.step();
                             bestRobustness = r;
-                            %if bestRobustness <= 0
-                            %    return
-                            %end
+                            
                             moveFound = true;
                             trace = [trace; currentInput]; % extend trace
                             allRobs = [allRobs; bestRobustness]; % extend robustness trace
@@ -70,6 +68,9 @@ classdef HillClimbing
                             %fprintf("Current Trace:\n");
                             %fprintf("  Thr:\tBrk:\tRob:\n");
                             %disp([trace allRobs]);
+                            if bestRobustness <= 0
+                                return
+                            end
                         end
                     end
                     if moveFound == false 

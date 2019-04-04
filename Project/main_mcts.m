@@ -1,16 +1,14 @@
 % model controller
-%tic;
 model = 'automatic_transmission_model_S1';
-%model = 'automatic_transmission_model_S2';
-
-%init_time = toc;
+model = 'automatic_transmission_model_S2';
+%model = 'automatic_transmission_model_S4';
 
 %MCTS Parameters
-budget = 10;
+budget = 100;
 
 % Input definition
 BIGM = 1000000;
-tic;
+
 ThrottleLimInf = 0;
 BrakeLimInf = 0;
 ThrottleLimSup = 100;
@@ -20,7 +18,7 @@ numSamplesThrottle = 10;
 numSamplesBrake    = 11;
 
 numRegionThrottle = 2;
-numRegionBrake    = 5;
+numRegionBrake    = 2;
 
 inLimInf = [ThrottleLimInf BrakeLimInf];
 inLimSup = [ThrottleLimSup BrakeLimSup];
@@ -52,7 +50,7 @@ while budget>0
     [rob, trace] = mcts.rollout(simCtrl);
     bestRobustness = min(bestRobustness, rob);
     % Check falsification
-    if rob<=0
+    if bestRobustness<=0
         fprintf("FALSIFICATION: %d\n", rob);
         disp(trace);
         return;
@@ -65,5 +63,4 @@ while budget>0
     budget = budget - 1;
 end
 
-
-
+%% 
