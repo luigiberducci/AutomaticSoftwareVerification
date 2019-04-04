@@ -42,6 +42,9 @@ classdef MCTS
             obj.availID = 1;
             root = MCNode(obj.availID, 0, [-1 -1], [-1 -1]); %The root is the only node with parent 0
             obj.nodes = [root];
+            obj.plot()
+
+
             %Increment next available node identifier
             obj.availID = obj.availID + 1;
         end
@@ -93,6 +96,7 @@ classdef MCTS
                 child = MCNode(obj.availID, nodeID, inLimInf, inLimSup);
                 obj.nodes = [obj.nodes child];
                 obj.availID = obj.availID+1;
+                obj.plot()
             end
         end
         
@@ -159,6 +163,27 @@ classdef MCTS
             for i = 1:length(obj.numInputRegion)
                 region(i) = randi([1 obj.numInputRegion(i)])
             end
+        end
+
+        function plot(obj)
+            n = size(obj.nodes);
+            pather_vec = zeros(n);
+            for node = obj.nodes
+                pather_vec(node.nodeID) = node.parentID;
+            end
+            treeplot(pather_vec);
+            [x,y] = treelayout(pather_vec);
+            for i=1:length(x)
+                nodeID = i;
+                node = obj.nodes(nodeID);
+                label = sprintf("ID: %d\nT: [%.2f, %.2f]\nB: [%.2f, %.2f]\nUCB: %.2f\nn: %.0f",...
+                nodeID, node.regionInf(2), node.regionSup(1), node.regionInf(2), node.regionSup(2), node.score, node.n);
+                text_shift_x = 0;
+                text_shift_y = (1+rem(nodeID,2))/20;
+                text(x(i)+text_shift_x, y(i)+text_shift_y, label);
+                % text(x(i) = text_shift, y(i), num2str(i));
+            end
+            drawnow %plot iteratively while building the tree
         end
 
         % TODO generalize to vector
