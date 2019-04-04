@@ -29,7 +29,7 @@ classdef MCTS
             obj.numCtrlPoints = numCtrlPnts;
             
             %Search algo
-            obj.maxNumRestarts = 1;
+            obj.maxNumRestarts = 10;
             
             %Initialize search algorithm parameters
             obj.inLimInf = inLimInf;
@@ -42,7 +42,7 @@ classdef MCTS
             obj.availID = 1;
             root = MCNode(obj.availID, 0, [-1 -1], [-1 -1]); %The root is the only node with parent 0
             obj.nodes = [root];
-            obj.plot()
+            %obj.plot()
 
             %Increment next availablplote node identifier
             obj.availID = obj.availID + 1;
@@ -95,7 +95,7 @@ classdef MCTS
                 child = MCNode(obj.availID, nodeID, inLimInf, inLimSup);
                 obj.nodes = [obj.nodes child];
                 obj.availID = obj.availID+1;
-                obj.plot()
+                %obj.plot()
             end
         end
         
@@ -116,9 +116,9 @@ classdef MCTS
             obj.modelCtrl = obj.modelCtrl.step();
         end
         
-        function [bestRob, trace] = rollout(obj, modelCtrl)
+        function [bestRob, bestTrace, nSimulations] = rollout(obj, modelCtrl)
             searchAlgo = src.HillClimbing(modelCtrl, obj.inLimInf, obj.inLimSup, obj.numInputDisc, obj.simTimeHorizon);
-            [~, bestRob, trace] = searchAlgo.run(obj.maxNumRestarts);
+            [~, bestRob, bestTrace, nSimulations] = searchAlgo.run(obj.maxNumRestarts);
         end
         
         function obj = backpropagation(obj, nodeID, score)

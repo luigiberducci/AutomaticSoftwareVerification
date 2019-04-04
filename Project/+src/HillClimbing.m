@@ -28,9 +28,10 @@ classdef HillClimbing
             obj.H = timeHorizon;
         end
 
-        function [currentModel, bestRobustness, trace] = run(obj, restarts)
+        function [currentModel, bestRobustness, trace, nSims] = run(obj, restarts)
             [T, B] = obj.computeDiscreteInputSignal();
             trial = restarts;
+            nSims = 0;
             totNumIntervals = obj.H / obj.mdlCtrl.interval;
             currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
             while trial > 0
@@ -38,6 +39,7 @@ classdef HillClimbing
                 trace = []; % init trace that minimizes robustness
                 allRobs = [];
                 trial = trial - 1;
+                nSims = nSims + 1;
                 bestRobustness = currentModel.lastRobustness;
                 
                 % DEBUG
@@ -64,7 +66,7 @@ classdef HillClimbing
                             allRobs = [allRobs; bestRobustness]; % extend robustness trace
 
                             %Debug
-                            fprintf("[Info] Best Robustness: %f\n\n", bestRobustness);
+                            %fprintf("[Info] Best Robustness: %f\n\n", bestRobustness);
                             %fprintf("Current Trace:\n");
                             %fprintf("  Thr:\tBrk:\tRob:\n");
                             %disp([trace allRobs]);

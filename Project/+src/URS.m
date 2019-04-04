@@ -33,19 +33,24 @@ classdef URS
             obj.quantumSize = (inLimSup - inLimInf) ./ numInDisc;
         end
         
-        function [rob, trace] = runRandomTrace(obj)
+        function [bestRobustness, trace] = runRandomTrace(obj)
             obj.modelCtrl = obj.modelCtrl.reset();  %Reset to t0
             %Initialize a trace of zeros (# ctrl points x size of input)
             trace = zeros(obj.numCtrlPoints, length(obj.inLimInf));
             i = 1;
+            bestRobustness = Inf;
             while obj.modelCtrl.currentSnapshotTime < obj.simTimeHorizon
                 u = obj.chooseAction();
                 trace(i, :) = u;
                 obj.modelCtrl = obj.modelCtrl.setInput(u);
                 obj.modelCtrl = obj.modelCtrl.step();
                 i = i + 1;
+                rob = obj.modelCtrl.lastRobustness();
+                bestRobustness = min(bestRobustness, rob);
+                if bestRobustness <= 0
+                    break;
+                end
             end
-            rob = obj.modelCtrl.lastRobustness();
         end
         
         function u = chooseAction(obj)

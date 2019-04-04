@@ -2,7 +2,7 @@
 t0 = tic;
 %Model parameters
 model = 'automatic_transmission_model_S1';  %Model filename
-%model = 'automatic_transmission_model_S2';
+model = 'automatic_transmission_model_S2';
 
 %Uniform Random Sampling (URS) parameters
 MAX_NUM_TRACE = 2000;  %Bound on num of trace to be simulated
