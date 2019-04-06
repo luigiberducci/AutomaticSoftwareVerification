@@ -6,7 +6,7 @@ model = 'automatic_transmission_model_S2';
 %model = 'automatic_transmission_model_S4';
 
 %MCTS Parameters
-budget = 10;       %Maximum number of iteration of MCTS
+budget = 1000000;   %Maximum number of iteration of MCTS
 BIGM   = 1000000;   %High constant used for score normalization
 
 % Input definition and Simulation parameters
@@ -62,6 +62,7 @@ end
 t_mcts = toc(t0);
 
 %Print results
+mcts.plot();
 printResult(numSimulatedTraces, bestRobustness, bestTrace, t_init, t_mcts);
 
 %% Helper Functions

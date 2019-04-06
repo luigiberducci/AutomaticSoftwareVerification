@@ -29,7 +29,7 @@ classdef MCTS
             obj.numCtrlPoints = numCtrlPnts;
             
             %Search algo
-            obj.maxNumRestarts = 10;
+            obj.maxNumRestarts = 5;
             
             %Initialize search algorithm parameters
             obj.inLimInf = inLimInf;
@@ -144,7 +144,7 @@ classdef MCTS
             N = parent.n;           % Number of visit of parent node
             n = node.n;             % Number of visit of current node
             V = node.score/node.n;  % Score mean
-            c = 2;                  % Weight factor
+            c = 0.5;                % Weight factor
             
             ucb = Inf;
             if not(n==0)
