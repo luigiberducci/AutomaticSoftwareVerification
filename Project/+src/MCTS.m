@@ -50,9 +50,10 @@ classdef MCTS
             obj.availID = obj.availID + 1;
         end
         
-        function curNodeID = selection(obj)
+        function curNodeID = selection(obj, simCtrl)
             curNodeID = 1;     %root
-            obj.modelCtrl = obj.modelCtrl.reset();  %Reset to t0
+            %obj.modelCtrl = obj.modelCtrl.reset();  %Reset to t0
+            obj.modelCtrl = simCtrl;
             children = obj.getChildren(curNodeID);
             while not(isempty(children))
                 max_val = 0;

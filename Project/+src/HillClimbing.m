@@ -32,7 +32,7 @@ classdef HillClimbing
             [T, B] = obj.computeDiscreteInputSignal();
             trial = restarts;
             nSims = 0;
-            totNumIntervals = obj.H / obj.mdlCtrl.interval;
+            % totNumIntervals = obj.H / obj.mdlCtrl.interval;
             currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
             fprintf("[Info] T0 HillClimbing: %d\n", currentModel.currentSnapshotTime);
             while trial > 0
@@ -46,7 +46,8 @@ classdef HillClimbing
                 % DEBUG
                 fprintf("[Info] Remaining Trials: %d\n", trial);
                 
-                while currentModel.numInterval < totNumIntervals
+                % while currentModel.numInterval < totNumIntervals
+                while currentModel.currentSnapshotTime < obj.H
                     moveFound = false;
                     iAction = 0; % incremental index of actions
                     Tprm = randperm(length(T)); % generate random permutation for neigbours

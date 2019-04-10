@@ -12,12 +12,12 @@ BIGM   = 1000000;   %High constant used for score normalization
 % Input definition and Simulation parameters
 [inLimInf, inLimSup, numInDisc, numInRegion] = defineInputDomains();
 simTimeHorizon = 30;    %Simulation time limit
-numCtrlPnts    = 2;    %Discretization of time
+numCtrlPnts    = 3;    %Discretization of time
 
 %% Monte Carlo Tree Search (MCTS)
 %Model Controller manages the simulations, proceeding by step `interval`
 interval = src.computeTimeDiscretization(simTimeHorizon, numCtrlPnts);
-simCtrl = src.ModelController(model, interval);
+simCtrl0 = src.ModelController(model, interval);
 
 %MCTS uses the ModelController, notice that it needs to be defined as `simCtrl` because
 %of Matlab scope handling
@@ -32,7 +32,8 @@ while budget>0
     fprintf("[Info] Budget: %d\n", budget);
     
     % Selection phase
-    nodeID = mcts.selection();
+    simCtrl = simCtrl0;
+    nodeID = mcts.selection(simCtrl);
     node = mcts.nodes(nodeID);
     if node.depth < numCtrlPnts
         mcts = mcts.expansion(nodeID);
@@ -44,6 +45,7 @@ while budget>0
     % Expansion phase
     
     % Rollout phase
+    simCtrl = mcts.modelCtrl;
     [rob, trace, nSimulations] = mcts.rollout(simCtrl);
     numSimulatedTraces = numSimulatedTraces + nSimulations;
     %Update best robustness and trace

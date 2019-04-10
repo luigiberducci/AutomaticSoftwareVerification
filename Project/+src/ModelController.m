@@ -62,7 +62,7 @@ classdef ModelController
         
         function obj = step(obj)
             %% STEP Step the simulation to the next time stage.
-            simCtrl = obj;
+            % simCtrl = obj;
             obj.numInterval = obj.numInterval + 1;
             time_slice = obj.currentSnapshotTime + obj.interval;
             obj.paramNameValStruct.StopTime = sprintf('%ld', time_slice);
@@ -86,6 +86,7 @@ classdef ModelController
         
         function obj = reset(obj)
             %% RESET Reset the simulation to an initial state.
+            set_param(obj.model, 'SimulationCommand', 'stop');
             obj = src.ModelController(obj.model, obj.interval);
         end
     end
