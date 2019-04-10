@@ -6,17 +6,16 @@ paramNameValStruct.SaveFinalState            = 'on';
 paramNameValStruct.SaveCompleteFinalSimState = 'on';
 paramNameValStruct.FinalStateName            = 'xFinal';
 paramNameValStruct.LoadInitialState          = 'off';
-paramNameValStruct.InitialState              = 'xInitial';
+paramNameValStruct.InitialState              = 'Sim.xInitial';
 paramNameValStruct.StopTime                  = string(epsilon);
 paramNameValStruct.SaveOutput                = 'on';
 paramNameValStruct.OutputSaveName            = 'Robustness';
             
-currentInput = [0 0];
-src.ModelController.set_input;
+src.ModelController.set_input([0 0]);
 
 simOut = sim(MODEL, paramNameValStruct);
-lastRobustness = simOut.Robustness.signals.values(end);
-xInitial = simOut.get('xFinal');
-currentSnapshotTime = simOut.get('xFinal').snapshotTime;
-numInterval = 0;
+Sim.lastRobustness = simOut.Robustness.signals.values(end);
+Sim.xInitial = simOut.get('xFinal');
+Sim.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
+Sim.numInterval = 0;
 paramNameValStruct.LoadInitialState = 'on';

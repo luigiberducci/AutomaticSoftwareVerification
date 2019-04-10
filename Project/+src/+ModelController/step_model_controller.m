@@ -1,8 +1,8 @@
-numInterval = numInterval + 1;
-time_slice = currentSnapshotTime + INTERVAL;
+Sim.numInterval = Sim.numInterval + 1;
+time_slice = Sim.currentSnapshotTime + Sim.INTERVAL;
 paramNameValStruct.StopTime = sprintf('%ld', time_slice);
 
 simOut = sim(MODEL, paramNameValStruct);
-xInitial = simOut.get('xFinal');
-currentSnapshotTime = simOut.get('xFinal').snapshotTime;
-lastRobustness = simOut.Robustness.signals.values(end);
+Sim.xInitial = simOut.get('xFinal');
+Sim.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
+Sim.lastRobustness = min(simOut.Robustness.signals.values);

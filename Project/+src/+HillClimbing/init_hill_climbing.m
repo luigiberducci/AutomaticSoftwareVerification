@@ -9,5 +9,4 @@
 %obj.inLimSup = inLimSup; %Should be in the workspace
 %obj.numInputSamples = numInDisc; %Should be in the workspace
             
-HCnumNeigbours = prod(numInDisc);
 %obj.H = timeHorizon; %Should be in the workspace

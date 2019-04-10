@@ -1,2 +1,7 @@
-set_param(MODEL+"/Throttle", "Value", string(currentInput(1)));
-set_param(MODEL+"/Brake",    "Value", string(currentInput(2)));
+function set_input(U)
+    global Sim; 
+    global MODEL;
+    Sim.currentInput = U;
+    set_param(MODEL+"/Throttle", "Value", string(U(1)));
+    set_param(MODEL+"/Brake",    "Value", string(U(2)));
+end

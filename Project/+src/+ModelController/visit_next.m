@@ -1,11 +1,10 @@
-save("tmp_state");
-
-currentInput = nextAction;
-src.ModelController.set_input;
+save("tmp_state", 'MODEL','Sim');
+originalInput = Sim.currentInput;
+    
+src.ModelController.set_input(Sim.visitInput);
 src.ModelController.step_model_controller;
+visitRobustness = min(simOut.Robustness.signals.values);
 
-clear xInitial;
-clear currentSnapshotTime;
-clear currentInput;
+clear Sim;
 load("tmp_state");
-src.ModelController.set_input;
+src.ModelController.set_input(originalInput);
