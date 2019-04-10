@@ -2,7 +2,7 @@
 t0 = tic;
 %Model filename
 model = 'automatic_transmission_model_S1';
-model = 'automatic_transmission_model_S2';
+% model = 'automatic_transmission_model_S2';
 %model = 'automatic_transmission_model_S4';
 
 %MCTS Parameters
@@ -12,7 +12,7 @@ BIGM   = 1000000;   %High constant used for score normalization
 % Input definition and Simulation parameters
 [inLimInf, inLimSup, numInDisc, numInRegion] = defineInputDomains();
 simTimeHorizon = 30;    %Simulation time limit
-numCtrlPnts    = 10;    %Discretization of time
+numCtrlPnts    = 2;    %Discretization of time
 
 %% Monte Carlo Tree Search (MCTS)
 %Model Controller manages the simulations, proceeding by step `interval`
@@ -34,10 +34,15 @@ while budget>0
     % Selection phase
     nodeID = mcts.selection();
     node = mcts.nodes(nodeID);
+    if node.depth < numCtrlPnts
+        mcts = mcts.expansion(nodeID);
+        [mcts, expandedNodeID] = mcts.preRollout(nodeID);
+    else
+        expandedNodeID = nodeID;
+    end
     %fprintf("[Info] Expand Node %d (Throttle %f %f, Brake %f %f)\n", nodeID, node.regionInf(1), node.regionSup(1), node.regionInf(2), node.regionSup(2));
     % Expansion phase
-    mcts = mcts.expansion(nodeID);
-    [mcts, expandedNodeID] = mcts.preRollout(nodeID);
+    
     % Rollout phase
     [rob, trace, nSimulations] = mcts.rollout(simCtrl);
     numSimulatedTraces = numSimulatedTraces + nSimulations;
@@ -47,14 +52,14 @@ while budget>0
         bestTrace = trace;
     end
     % Check falsification
-    if bestRobustness<=0
+    if bestRobustness<=-100000
         fprintf("FALSIFICATION: %d\n", rob);
         disp(trace);
         return;
     end
     % Backpropagation phase
-    score = BIGM/(rob+BIGM);   %First attempt
-    mcts = mcts.backpropagation(expandedNodeID, score);
+    % score = BIGM/(rob+BIGM);   %First attempt
+    mcts = mcts.backpropagation(expandedNodeID, rob);
     
     %Reduce budget
     budget = budget - 1;

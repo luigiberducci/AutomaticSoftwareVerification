@@ -2,6 +2,7 @@ classdef MCTS
     properties
         %Tree properties
         nodes
+        maxRobustness % max robustness value yet found
         actions
         availID
         %Model properties
@@ -40,9 +41,10 @@ classdef MCTS
             
             %Create root node
             obj.availID = 1;
-            root = MCNode(obj.availID, 0, [-1 -1], [-1 -1]); %The root is the only node with parent 0
+            root = MCNode(obj.availID, 0, [-1 -1], [-1 -1], 0); %The root is the only node with parent 0 and depth 0
             obj.nodes = [root];
-            %obj.plot()
+            obj.maxRobustness = -Inf;
+            obj.plot()
 
             %Increment next availablplote node identifier
             obj.availID = obj.availID + 1;
@@ -88,14 +90,15 @@ classdef MCTS
         end
         
         function obj = expansion(obj, nodeID)
+            parent = obj.nodes(nodeID);
             for actionID = 1:prod(obj.numInRegions)
                 [it,ib] = ind2sub(obj.numInRegions, actionID);
                 inLimInf = [it*obj.quantumSize(1) ib*obj.quantumSize(2)];
                 inLimSup = [(it+1)*obj.quantumSize(1) (ib+1)*obj.quantumSize(2)];
-                child = MCNode(obj.availID, nodeID, inLimInf, inLimSup);
+                child = MCNode(obj.availID, nodeID, inLimInf, inLimSup, parent.depth+1);
                 obj.nodes = [obj.nodes child];
                 obj.availID = obj.availID+1;
-                %obj.plot()
+                obj.plot()
             end
         end
         
@@ -122,13 +125,15 @@ classdef MCTS
         end
         
         function obj = backpropagation(obj, nodeID, score)
+            obj.maxRobustness = max(obj.maxRobustness, score);
             while nodeID>=1
                 node = obj.nodes(nodeID);
-                node.score = max(node.score, score);
+                node.score = min(node.score, score);
                 node.n = node.n+1;
                 obj.nodes(nodeID) = node; %Save node modified
                 nodeID = node.parentID;
             end
+            obj.plot()
         end
         
         function val = evalNode(obj, node)
@@ -143,12 +148,13 @@ classdef MCTS
             parent = obj.nodes(node.parentID);
             N = parent.n;           % Number of visit of parent node
             n = node.n;             % Number of visit of current node
-            V = node.score/node.n;  % Score mean
-            c = 0.5;                % Weight factor
+            V = 1 - node.score /obj.maxRobustness;
+            % V = node.score/node.n;  % Score mean
+            c = 0.0;                % Weight factor
             
             ucb = Inf;
             if not(n==0)
-                ucb = V + c*sqrt(log(N)/n);
+                ucb = V + c*sqrt(2*log(N)/n);
             end
         end
         
@@ -175,10 +181,15 @@ classdef MCTS
             for i=1:length(x)
                 nodeID = i;
                 node = obj.nodes(nodeID);
+                if node.depth == 0
+                    ucb = node.score;
+                else
+                    ucb = obj.computeUCB(node);
+                end
                 
                 %label = sprintf("ID: %d\nT: [%.2f, %.2f]\nB: [%.2f, %.2f]\nUCB: %.2f\nn: %.0f",...
                 %nodeID, node.regionInf(2), node.regionSup(1), node.regionInf(2), node.regionSup(2), node.score, node.n);
-                label = sprintf("UCB: %.2f\nn: %.0f", node.score, node.n);
+                label = sprintf("UCB: %.2f\nn: %d\nh: %d", ucb, node.n, node.depth);
                 
                 text_shift_x = 0;
                 text_shift_y = (1+rem(nodeID,2))/20;

@@ -34,6 +34,7 @@ classdef HillClimbing
             nSims = 0;
             totNumIntervals = obj.H / obj.mdlCtrl.interval;
             currentModel = obj.mdlCtrl; % currentModel is a name better than obj.model
+            fprintf("[Info] T0 HillClimbing: %d\n", currentModel.currentSnapshotTime);
             while trial > 0
                 currentModel = obj.mdlCtrl;
                 trace = []; % init trace that minimizes robustness
@@ -70,9 +71,9 @@ classdef HillClimbing
                             %fprintf("Current Trace:\n");
                             %fprintf("  Thr:\tBrk:\tRob:\n");
                             %disp([trace allRobs]);
-                            if bestRobustness <= 0
-                                return
-                            end
+                            %if bestRobustness <= 0
+                                %return
+                           % end
                         end
                     end
                     if moveFound == false 
