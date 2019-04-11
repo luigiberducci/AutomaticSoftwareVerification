@@ -18,7 +18,7 @@ classdef MCNode
             obj.score = 0;
             obj.n = 0;
             obj.parentID = parentID;
-            obj.depth = depth
+            obj.depth = depth;
         end
     end
 end

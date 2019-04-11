@@ -12,7 +12,7 @@ while numSimulatedTraces < MAX_NUM_TRACE
     fprintf("[Info] URS - Remaining budget: %d\n", (MAX_NUM_TRACE-numSimulatedTraces));
     
     %Run a trace
-    src.UniformRandomSampling.run_uniform_random_sampling;
+    noo.UniformRandomSampling.run_uniform_random_sampling;
     rob = URS.bestRobustness;
     if rob < finalBestRobustness
         bestRobustness = rob;
@@ -31,16 +31,5 @@ end
 t_urs = toc(t0);
 
 %Print result
-printResult(numSimulatedTraces, bestRobustness, bestTrace, t_urs);
-
-%% Helper Functions
-function printResult(numSimulatedTraces, bestRobustness, bestTrace, elapsedTime)
-    fprintf("************* RESULTS URS *************\n");
-    fprintf("[Info] Simulation time:\t\t%f seconds\n", elapsedTime);
-    fprintf("[Info] Approx. time x trace:\t%f seconds\n", elapsedTime/numSimulatedTraces);
-    fprintf("[Info] Simulated trace:\t\t%d\n", numSimulatedTraces);
-    fprintf("[Info] Best Robustness:\t\t%f\n", bestRobustness);
-    fprintf("[Info] Best Trace:\n");
-    disp(bestTrace);
-end
+printMainResults("URS", numSimulatedTraces, bestRobustness, bestTrace, t_urs);
 
