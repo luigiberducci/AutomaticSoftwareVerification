@@ -1,12 +1,9 @@
-%% HillClimbing constructor
-% `model` is an instance of ModelController
-% `inLimInf` is a vector of lowerbound of each input signal
-% `inLimSup` is a vector of upperbound of each input signal
-% `numInDisc` is a vector of number of values to sample for
-%             each input signal
-%obj.mdlCtrl = modelCtrl; %Should be in the workspace
-%obj.inLimInf = inLimInf; %Should be in the workspace
-%obj.inLimSup = inLimSup; %Should be in the workspace
-%obj.numInputSamples = numInDisc; %Should be in the workspace
-            
-%obj.H = timeHorizon; %Should be in the workspace
+%% Initialize/Reset HC struct
+% Pre:  `Sim`struct must exist, global `HC` with static configuration exist
+% Post: `HC` struct exist and dynamic fields are empty
+
+% Notice: HC.restarts, HC.maxNumNeighbors are already declared in init_param
+% because they are constant and no subject to change during simulation
+HC.bestRobustness = Inf;
+HC.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
+HC.numSimulatedTraces = 0;

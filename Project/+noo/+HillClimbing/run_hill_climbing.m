@@ -1,9 +1,7 @@
-%function [currentModel, bestRobustness, trace, nSims] = run(mdlCtrl, restarts)
 [T, B] = noo.HillClimbing.computeDiscreteInputSignal(IN.inLimInf, IN.inLimSup, IN.numInputSamples);
-numNeigbours = prod(numInputSamples);
     
 trial = HC.restarts;
-nSims = 0;          %Counter of simulated traces
+HC.numSimulatedTraces = 0;          %Counter of simulated traces
 
 while trial > 0
 	% DEBUG
@@ -13,7 +11,7 @@ while trial > 0
     trace = []; % init trace that minimizes robustness
     
     trial = trial - 1;
-    nSims = nSims + 1;
+    HC.numSimulatedTraces = HC.numSimulatedTraces + 1;
     curBestRobustness = Inf;
                 
     while Sim.currentSnapshotTime < Sim.TIMEHORIZON
@@ -27,7 +25,7 @@ while trial > 0
                 u = [T(Tprm(it)) B(Bprm(ib))];
                 noo.ModelController.set_visit_input(u);
                 noo.ModelController.visit_next;
-                r = visitRobustness;
+                r = Sim.visitRobustness;
                 if r <= curBestRobustness % a not worst neigbourd has being found
                     % go to neigbourd
                     noo.ModelController.set_input(u);
@@ -49,7 +47,16 @@ while trial > 0
     if curBestRobustness<=0
         break
     end
-    
 end
 
-
+%Remove useless variables from the global scope (it is a script,
+%unfortunately)
+clear trial;
+clear curBestRobustness;
+clear trace;
+clear T;
+clear B;
+clear Tprm;
+clear Bprm;
+clear moveFound;
+clear iAction;

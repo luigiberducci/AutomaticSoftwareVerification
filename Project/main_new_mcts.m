@@ -1,4 +1,5 @@
 %% Initialization
+t0 = tic;
 init_param;
 
 %% Monte Carlo Tree Search (MCTS)
@@ -8,29 +9,30 @@ noo.ModelController.init_model_controller;
 %MCTS uses the ModelController, notice that it needs to be defined as `simCtrl` because
 %of Matlab scope handling
 bestRobustness = Inf;      %Minimize robustness, then init as Inf
-bestTrace = zeros(numCtrlPnts, length(inLimInf));
+bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
 numSimulatedTraces = 0;     %Counter of simulated traces
 t_init = toc(t0);
 t0 = tic;
+budget = MCTS.BUDGET;
 while budget>0
     %Debug
     fprintf("[Info] Budget: %d\n", budget);
     
     % Selection phase
     nodeID = noo.MCTS.selection();
-    node = mcts.nodes(nodeID);
-    if node.depth < numCtrlPnts
-        mcts = noo.MCTS.expansion(nodeID);
+    node = MCTS.nodes(nodeID);
+    if node.depth < Sim.NUMCTRLPOINTS
+        noo.MCTS.expansion(nodeID);
         noo.MCTS.pre_rollout;
     end
     % Selection/Prerollout update MCTS.currentNodeID to the node from which
     % start the rollout phase.
     
-    %fprintf("[Info] Expand Node %d (Throttle %f %f, Brake %f %f)\n", nodeID, node.regionInf(1), node.regionSup(1), node.regionInf(2), node.regionSup(2));
+    fprintf("[Info] Expand Node %d (Throttle %f %f, Brake %f %f)\n", nodeID, node.regionInf(1), node.regionSup(1), node.regionInf(2), node.regionSup(2));
     
     % Rollout phase
     noo.MCTS.rollout;
-    numSimulatedTraces = numSimulatedTraces + nSimulations;
+    numSimulatedTraces = numSimulatedTraces + MCTS.rolloutNumSimTraces;
     %Update best robustness and trace
     if MCTS.rolloutBestRob<bestRobustness
         bestRobustness = MCTS.rolloutBestRob;
@@ -43,10 +45,11 @@ while budget>0
         return;
     end
     % Backpropagation phase
-    mcts = noo.MCTS.backpropagation(MCTS.currentNodeID, rob);
+    noo.MCTS.backpropagation(MCTS.currentNodeID, MCTS.rolloutBestRob);
     
     %Reduce budget
     budget = budget - 1;
+    noo.MCTS.plot;
 end
 t_mcts = toc(t0);
 

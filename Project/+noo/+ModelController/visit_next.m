@@ -3,7 +3,7 @@ originalInput = Sim.currentInput;
     
 noo.ModelController.set_input(Sim.visitInput);
 noo.ModelController.step_model_controller;
-visitRobustness = min(simOut.Robustness.signals.values);
+Sim.visitRobustness = min(simOut.Robustness.signals.values);
 
 clear Sim;
 load("tmp_state");

@@ -16,34 +16,27 @@ Sim.INTERVAL = src.computeTimeDiscretization(Sim.TIMEHORIZON, Sim.NUMCTRLPOINTS)
 Sim.currentInput = [0 0];
 Sim.visitInput = [0 0];
 Sim.lastRobustness = Inf;
+Sim.visitRobustness = Inf;
 Sim.xInitial = 0;
 Sim.currentSnapshotTime = 0;
 Sim.numInterval = 0;
 
+%% Input definition
+%IN = inLimInf, inLimSup, quantumSize, numInputSamples, numInputRegion
+IN = inputDefinition();
+
 %% MCTS
-%Create root node
-MCTS.availID = 1;
-root = MCNode(MCTS.availID, 0, [-1 -1], [-1 -1], 0); %The root is the only node with parent 0 and depth 0
-MCTS.nodes = [root];
-MCTS.maxRobustness = -Inf;
-MCTS.currentNodeID = 0;
-MCTS.availID = MCTS.availID + 1; %Increment next availablplote node identifier
-MCTS.rolloutBestRob = Inf;
-MCTS.rolloutBestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
+MCTS.BUDGET = 5;
+noo.MCTS.init_mcts;
 
 %% Hill climbing
 HC.restarts = 5;
 HC.maxNumNeighbours = 100;
-HC.bestRobustness = Inf;
-HC.trace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
+noo.HillClimbing.init_hill_climbing;    %Initialize dynamic fields
 
 %% Uniform Random Sampling
 URS.bestRobustness = Inf;   %Robustness has to be minimized, then init as Inf
 URS.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
-
-%% Input definition
-%IN = inLimInf, inLimSup, quantumSize, numInputSamples, numInputRegion
-IN = inputDefinition();
 
 %% Open model
 load_system(MODEL);
