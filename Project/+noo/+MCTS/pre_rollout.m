@@ -11,8 +11,10 @@ end
 % Move to child
 childID = children(min_id);
     
+% TODO set row struct per prefisso regioni (trovi su nodo)
 u = noo.MCTS.chooseActionFromNodeID(childID);
 noo.ModelController.set_input(u);
 noo.ModelController.step_model_controller;
+% TODO do not simuluate here, handled in HC
 
 MCTS.currentNodeID = childID;

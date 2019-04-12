@@ -7,3 +7,5 @@
 HC.bestRobustness = Inf;
 HC.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
 HC.numSimulatedTraces = 0;
+
+%TODO add struct for regions
