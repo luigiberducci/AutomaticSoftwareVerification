@@ -11,7 +11,7 @@ MODEL = 'automatic_transmission_model_S1';
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
 Sim.TIMEHORIZON = 30;
-Sim.NUMCTRLPOINTS = 4;
+Sim.NUMCTRLPOINTS = 5;
 Sim.INTERVAL = src.computeTimeDiscretization(Sim.TIMEHORIZON, Sim.NUMCTRLPOINTS);
 Sim.currentInput = [0 0];
 Sim.visitInput = [0 0];
@@ -26,7 +26,7 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 5;
+MCTS.BUDGET = 20;
 noo.MCTS.init_mcts;
 
 %% Hill climbing

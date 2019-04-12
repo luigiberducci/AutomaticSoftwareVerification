@@ -1,5 +1,4 @@
 %MODELCONTROLLER Construct an instance of this class
-numInterval = 0;
 epsilon     = 1e-3;
             
 paramNameValStruct.SaveFinalState            = 'on';
@@ -19,3 +18,5 @@ Sim.xInitial = simOut.get('xFinal');
 Sim.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
 Sim.numInterval = 0;
 paramNameValStruct.LoadInitialState = 'on';
+
+clear epsilon;

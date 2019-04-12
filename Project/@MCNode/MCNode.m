@@ -15,7 +15,7 @@ classdef MCNode
             obj.nodeID = id;
             obj.regionInf = regInf;
             obj.regionSup = regSup;
-            obj.score = 0;
+            obj.score = Inf; %Score is robustness, our goal is to minimize it
             obj.n = 0;
             obj.parentID = parentID;
             obj.depth = depth;

@@ -3,13 +3,16 @@
 trial = HC.restarts;
 HC.numSimulatedTraces = 0;          %Counter of simulated traces
 
+save("hc_state", 'MODEL','Sim');
+
 while trial > 0
 	% DEBUG
     fprintf("[Info] HC - Remaining Trials: %d\n", trial);
-        
-    noo.ModelController.init_model_controller;
-    trace = []; % init trace that minimizes robustness
+    clear Sim;
+    load("hc_state");
     
+    % init trace that minimizes robustness    
+    trace = [];
     trial = trial - 1;
     HC.numSimulatedTraces = HC.numSimulatedTraces + 1;
     curBestRobustness = Inf;
@@ -30,7 +33,7 @@ while trial > 0
                     % go to neigbourd
                     noo.ModelController.set_input(u);
                     noo.ModelController.step_model_controller;
-                    curBestRobustness = r;
+                    curBestRobustness = Sim.lastRobustness;
                             
                     moveFound = true;
                     trace = [trace; u]; % extend trace

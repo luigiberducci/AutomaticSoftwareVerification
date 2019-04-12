@@ -1,6 +1,7 @@
 function curNodeID = selection()
     global MCTS;
     global MODEL;
+    global Sim;
     
     %First, reset the model controller to time0
     noo.ModelController.init_model_controller;

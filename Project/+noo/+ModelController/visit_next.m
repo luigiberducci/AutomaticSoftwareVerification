@@ -3,8 +3,11 @@ originalInput = Sim.currentInput;
     
 noo.ModelController.set_input(Sim.visitInput);
 noo.ModelController.step_model_controller;
-Sim.visitRobustness = min(simOut.Robustness.signals.values);
+visitRobustness = Sim.lastRobustness;   %visitRobustness is a tmp var
 
-clear Sim;
+clear Sim;  %Otherwise we loose with this clear
 load("tmp_state");
+Sim.visitRobustness = visitRobustness;
 noo.ModelController.set_input(originalInput);
+
+clear visitRobustness;  %Now is useless

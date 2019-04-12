@@ -1,18 +1,15 @@
+clear all;
 %% Initialization
 t0 = tic;
-init_param;
+init_param;     %Simulation parameters and other config
+noo.ModelController.init_model_controller; %Simulation Manager 
+t_init = toc(t0);
 
 %% Monte Carlo Tree Search (MCTS)
-%Model Controller manages the simulations, proceeding by step `interval`
-noo.ModelController.init_model_controller;
-
-%MCTS uses the ModelController, notice that it needs to be defined as `simCtrl` because
-%of Matlab scope handling
+t0 = tic;
 bestRobustness = Inf;      %Minimize robustness, then init as Inf
 bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
 numSimulatedTraces = 0;     %Counter of simulated traces
-t_init = toc(t0);
-t0 = tic;
 budget = MCTS.BUDGET;
 while budget>0
     %Debug
@@ -55,5 +52,5 @@ t_mcts = toc(t0);
 
 %Print results
 noo.MCTS.plot();
-printMainResults("URS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
+src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
 
