@@ -12,9 +12,15 @@ end
 childID = children(min_id);
     
 % TODO set row struct per prefisso regioni (trovi su nodo)
-u = noo.MCTS.chooseActionFromNodeID(childID);
-noo.ModelController.set_input(u);
-noo.ModelController.step_model_controller;
+% u = noo.MCTS.chooseActionFromNodeID(childID);
+% noo.ModelController.set_input(u);
+% noo.ModelController.step_model_controller;
 % TODO do not simuluate here, handled in HC
+
+%update simulation trace with the node currently selected for rollout
+MCTS.tracePrefixLen = MCTS.tracePrefixLen + 1;
+rolloutNode = MCTS.nodes(childID);
+MCTS.traceInf(MCTS.tracePrefixLen,:) = rolloutNode.regionInf;
+MCTS.traceSup(MCTS.tracePrefixLen,:) = rolloutNode.regionSup;
 
 MCTS.currentNodeID = childID;

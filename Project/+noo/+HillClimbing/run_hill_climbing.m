@@ -1,4 +1,6 @@
-[T, B] = noo.HillClimbing.computeDiscreteInputSignal(IN.inLimInf, IN.inLimSup, IN.numInputSamples);
+global MCTS
+
+[T_full, B_full] = noo.HillClimbing.computeDiscreteInputSignal(IN.inLimInf, IN.inLimSup, IN.numInputSamples);
     
 trial = HC.restarts;
 HC.numSimulatedTraces = 0;          %Counter of simulated traces
@@ -17,12 +19,20 @@ while trial > 0
     HC.numSimulatedTraces = HC.numSimulatedTraces + 1;
     curBestRobustness = Inf;
                 
+    simStep = 0;
     while Sim.currentSnapshotTime < Sim.TIMEHORIZON
+        simStep = simStep + 1;
         moveFound = false;
+        % select only signals in current (=simStep) region
+        T = T_full(find(MCTS.traceInf(simStep,1) <= T_full & T_full <= MCTS.traceSup(simStep,1)));
+        B = B_full(find(MCTS.traceInf(simStep,2) <= B_full & B_full <= MCTS.traceSup(simStep,2)));
         iAction = 0; % incremental index of actions
         Tprm = randperm(length(T)); % generate random permutation for neigbours
         Bprm = randperm(length(B)); % generate random permutation for neigbours
         while moveFound == false && iAction < HC.maxNumNeighbours
+                MCTS.traceInf
+                trace
+                MCTS.traceSup
                 iAction = iAction + 1; % consume next neigbours
                 [it, ib] = ind2sub([length(T) length(B)], iAction);
                 u = [T(Tprm(it)) B(Bprm(ib))];
@@ -34,7 +44,6 @@ while trial > 0
                     noo.ModelController.set_input(u);
                     noo.ModelController.step_model_controller;
                     curBestRobustness = Sim.lastRobustness;
-                            
                     moveFound = true;
                     trace = [trace; u]; % extend trace
                 end

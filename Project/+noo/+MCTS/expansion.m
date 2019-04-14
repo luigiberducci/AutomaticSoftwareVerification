@@ -2,7 +2,7 @@ function expansion(nodeID)
     global MCTS;
     global IN;
     
-    MCTS.currentNodeID = nodeID;
+    MCTS.currentNodeID = nodeID; %CHECK is't it already in MCTS from expansion?
     parent = MCTS.nodes(nodeID);
     for actionID = 1:prod(IN.numInputRegions)
         [it,ib] = ind2sub(IN.numInputRegions, actionID);
