@@ -30,9 +30,10 @@ while trial > 0
         Tprm = randperm(length(T)); % generate random permutation for neigbours
         Bprm = randperm(length(B)); % generate random permutation for neigbours
         while moveFound == false && iAction < HC.maxNumNeighbours
-                MCTS.traceInf
-                trace
-                MCTS.traceSup
+                %Debug
+                %MCTS.traceInf
+                %trace
+                %MCTS.traceSup
                 iAction = iAction + 1; % consume next neigbours
                 [it, ib] = ind2sub([length(T) length(B)], iAction);
                 u = [T(Tprm(it)) B(Bprm(ib))];

@@ -24,6 +24,7 @@ function curNodeID = selection()
                 max_val = childVal;
                 max_child = childID;
                 % set the prefix of the trace according to ancestors
+                % TODO: move trace prefix update out of the `for children` (because for large branching factor, we waste time)
                 MCTS.traceInf(MCTS.tracePrefixLen,:) = child.regionInf;
                 MCTS.traceSup(MCTS.tracePrefixLen,:) = child.regionSup;
             end
