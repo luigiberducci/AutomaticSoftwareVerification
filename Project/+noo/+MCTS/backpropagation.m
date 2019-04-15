@@ -8,6 +8,6 @@ function backpropagation(nodeID, score)
         MCTS.nodes(nodeID) = node; %Save node modified
         nodeID = node.parentID;
     end
-	noo.MCTS.plot();
+	%noo.MCTS.plot();
 end
 

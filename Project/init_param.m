@@ -6,12 +6,12 @@ global MCTS;
 global HC;
 
 %% Model filename
-MODEL = 'automatic_transmission_model_S1';
+MODEL = 'automatic_transmission_model_S2';
 
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
 Sim.TIMEHORIZON = 30;
-Sim.NUMCTRLPOINTS = 2;
+Sim.NUMCTRLPOINTS = 5;
 Sim.INTERVAL = src.computeTimeDiscretization(Sim.TIMEHORIZON, Sim.NUMCTRLPOINTS);
 Sim.currentInput = [0 0];
 Sim.visitInput = [0 0];
@@ -26,8 +26,8 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 10;
-MCTS.C = 0.0;
+MCTS.BUDGET = 1000;
+MCTS.C = 1.0;
 noo.MCTS.init_mcts;
 
 %% Hill climbing
@@ -54,8 +54,8 @@ function IN = inputDefinition()
     numSamplesThrottle = 100;    %Discretization of Throttle signal
     numSamplesBrake    = 300;    %Discretization of Brake signal
 
-    numRegionThrottle = 2;
-    numRegionBrake    = 2;
+    numRegionThrottle = 3;
+    numRegionBrake    = 5;
 
     %Create input structure to give as input
     IN.inLimInf = [ThrottleLimInf BrakeLimInf];

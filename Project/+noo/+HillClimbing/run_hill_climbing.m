@@ -7,6 +7,8 @@ trial = HC.restarts;
 
 save("hc_state", 'MODEL','Sim');
 
+% DEBUG
+fprintf("[Info] HC - Starting with %d trials\n", trial);
 while trial > 0
 	% DEBUG
     fprintf("[Info] HC - Remaining Trials: %d\n", trial);
@@ -59,7 +61,7 @@ while trial > 0
             break
         end
     end
-    curBestRobustness
+    
     if curBestRobustness<HC.bestRobustness
         HC.bestRobustness = curBestRobustness;
         HC.bestTrace = trace;
