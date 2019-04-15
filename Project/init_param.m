@@ -11,7 +11,7 @@ MODEL = 'automatic_transmission_model_S1';
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
 Sim.TIMEHORIZON = 30;
-Sim.NUMCTRLPOINTS = 5;
+Sim.NUMCTRLPOINTS = 2;
 Sim.INTERVAL = src.computeTimeDiscretization(Sim.TIMEHORIZON, Sim.NUMCTRLPOINTS);
 Sim.currentInput = [0 0];
 Sim.visitInput = [0 0];
@@ -26,7 +26,8 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 20;
+MCTS.BUDGET = 10;
+MCTS.C = 0.0;
 noo.MCTS.init_mcts;
 
 %% Hill climbing
@@ -50,8 +51,8 @@ function IN = inputDefinition()
     BrakeLimInf = 0;        %Lowerbound of Brake signal
     BrakeLimSup = 325;      %Upperbound of Brake signal
 
-    numSamplesThrottle = 10;    %Discretization of Throttle signal
-    numSamplesBrake    = 30;    %Discretization of Brake signal
+    numSamplesThrottle = 100;    %Discretization of Throttle signal
+    numSamplesBrake    = 300;    %Discretization of Brake signal
 
     numRegionThrottle = 2;
     numRegionBrake    = 2;
@@ -61,5 +62,5 @@ function IN = inputDefinition()
     IN.inLimSup = [ThrottleLimSup BrakeLimSup];
     IN.numInputSamples = [numSamplesThrottle numSamplesBrake];
     IN.numInputRegions = [numRegionThrottle numRegionBrake];
-    IN.quantumSize = (IN.inLimSup - IN.inLimInf) ./ IN.numInputSamples;
+    IN.quantumSize = (IN.inLimSup - IN.inLimInf) ./ IN.numInputRegions;
 end

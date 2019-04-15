@@ -16,7 +16,7 @@ function curNodeID = selection()
     while not(isempty(children))
         MCTS.tracePrefixLen = MCTS.tracePrefixLen + 1;
         max_val = 0;
-        max_child = -1;
+        max_child = -1;     %%PROBLEM HERE
         for childID = children
             child = MCTS.nodes(childID);
             childVal = noo.MCTS.computeUCB(child);

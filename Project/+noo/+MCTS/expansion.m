@@ -11,6 +11,6 @@ function expansion(nodeID)
         child = MCNode(MCTS.availID, nodeID, inLimInf, inLimSup, parent.depth+1);
         MCTS.nodes = [MCTS.nodes child];
         MCTS.availID = MCTS.availID+1;
-        %obj.plot()
+        noo.MCTS.plot;
     end
 end

@@ -4,10 +4,9 @@ function ucb = computeUCB(node)
     N = parent.n;           % Number of visit of parent node
     n = node.n;             % Number of visit of current node
     V = 1 - node.score /MCTS.maxRobustness;
-    c = 0.0;                % Weight factor
             
 	ucb = Inf;
     if not(n==0)
-        ucb = V + c*sqrt(2*log(N)/n);
+        ucb = V + MCTS.C*sqrt(2*log(N)/n);
     end
 end

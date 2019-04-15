@@ -1,15 +1,16 @@
-global MCTS
+%global MCTS
 
 [T_full, B_full] = noo.HillClimbing.computeDiscreteInputSignal(IN.inLimInf, IN.inLimSup, IN.numInputSamples);
     
 trial = HC.restarts;
-HC.numSimulatedTraces = 0;          %Counter of simulated traces
+%HC.numSimulatedTraces = 0; %Moved into init_hill_climbing
 
 save("hc_state", 'MODEL','Sim');
 
 while trial > 0
 	% DEBUG
     fprintf("[Info] HC - Remaining Trials: %d\n", trial);
+    %TODO Remove saving/restore of this state
     clear Sim;
     load("hc_state");
     
@@ -19,9 +20,14 @@ while trial > 0
     HC.numSimulatedTraces = HC.numSimulatedTraces + 1;
     curBestRobustness = Inf;
                 
-    simStep = 0;
+    simStep = 1;
     while Sim.currentSnapshotTime < Sim.TIMEHORIZON
-        simStep = simStep + 1;
+        %Update the simStep only when simulation time is greater than the
+        %one associated to the step. Otherwise, sometimes happen out of
+        %index error
+        if Sim.currentSnapshotTime > simStep*Sim.INTERVAL
+            simStep = simStep + 1;
+        end
         moveFound = false;
         % select only signals in current (=simStep) region
         T = T_full(find(MCTS.traceInf(simStep,1) <= T_full & T_full <= MCTS.traceSup(simStep,1)));
@@ -51,8 +57,9 @@ while trial > 0
         end
         if moveFound == false 
             break
-    	end
+        end
     end
+    curBestRobustness
     if curBestRobustness<HC.bestRobustness
         HC.bestRobustness = curBestRobustness;
         HC.bestTrace = trace;
