@@ -36,7 +36,7 @@ while budget>0
         bestTrace = MCTS.rolloutBestTrace;
     end
     % Check falsification
-    if bestRobustness<=0
+    if bestRobustness<0
         fprintf("FALSIFICATION: %d\n", rob);
         disp(bestTrace);
         return;
@@ -54,3 +54,4 @@ t_mcts = toc(t0);
 noo.MCTS.plot();
 src.printMainResults("MCTS - Test C=0", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
 
+save('S2')

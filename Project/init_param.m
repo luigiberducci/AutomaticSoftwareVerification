@@ -27,7 +27,7 @@ IN = inputDefinition();
 
 %% MCTS
 MCTS.BUDGET = 1000;
-MCTS.C = 1.0;
+MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
 %% Hill climbing
