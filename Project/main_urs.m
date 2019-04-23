@@ -1,10 +1,9 @@
 clear all;
 %% Initialization
-t0 = tic;
-init_param;     %Simulation parameters and other config
-noo.ModelController.init_model_controller; %Simulation Manager 
-t_init = toc(t0);
+clear all
+init_param
 %Uniform Random Sampling (URS) parameters
+MAX_NUM_TRACE = 1;  %Bound on num of trace to be simulated
 numSimulatedTraces = 0; %Number of trace currently simulated
 
 %% Uniform Random Sampling

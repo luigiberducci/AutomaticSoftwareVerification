@@ -1,8 +1,8 @@
 %% Initialization
 t0 = tic;
 %Model filename
-model = 'automatic_transmission_model_S1';
-% model = 'automatic_transmission_model_S2';
+% model = 'automatic_transmission_model_S1';
+model = 'automatic_transmission_model_S2';
 %model = 'automatic_transmission_model_S4';
 
 %MCTS Parameters

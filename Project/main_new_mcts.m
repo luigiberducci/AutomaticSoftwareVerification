@@ -17,9 +17,11 @@ while budget>0
     
     % Selection phase
     nodeID = noo.MCTS.selection();
+    noo.MCTS.plot;
     node = MCTS.nodes(nodeID);
     if node.depth < Sim.NUMCTRLPOINTS
         noo.MCTS.expansion(nodeID);
+        noo.MCTS.plot;
         noo.MCTS.pre_rollout;
     end
     % Selection/Prerollout update MCTS.currentNodeID to the node from which
@@ -29,6 +31,8 @@ while budget>0
     
     % Rollout phase
     noo.MCTS.rollout;
+    noo.MCTS.plot;
+
     numSimulatedTraces = numSimulatedTraces + MCTS.rolloutNumSimTraces;
     %Update best robustness and trace
     if MCTS.rolloutBestRob<bestRobustness
@@ -46,7 +50,7 @@ while budget>0
     
     %Reduce budget
     budget = budget - 1;
-    %noo.MCTS.plot;
+    noo.MCTS.plot;
 end
 t_mcts = toc(t0);
 

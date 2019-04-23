@@ -8,7 +8,7 @@ global HC;
 
 %% Model filename
 SPEC = 2;
-MODEL = 'automatic_transmission_model_simple';
+MODEL = 'automatic_transmission_model_S2_norm';
 
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
@@ -28,8 +28,8 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 250;
-MCTS.C = 1;
+MCTS.BUDGET = 300;
+MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
 %% Hill climbing
@@ -58,7 +58,7 @@ function IN = inputDefinition()
     numSamplesBrake    = 300;    %Discretization of Brake signal
 
     numRegionThrottle = 3;
-    numRegionBrake    = 5;
+    numRegionBrake    = 6;
 
     %Create input structure to give as input
     IN.inLimInf = [ThrottleLimInf BrakeLimInf];
