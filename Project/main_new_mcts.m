@@ -13,7 +13,7 @@ numSimulatedTraces = 0;     %Counter of simulated traces
 budget = MCTS.BUDGET;
 while budget>0
     %Debug
-    fprintf("[Info] Budget: %d\n", budget);
+    fprintf("[Info] MCTS Budget: %d\n - Best Rob: %3f", budget, bestRobustness);
     
     % Selection phase
     nodeID = noo.MCTS.selection();
@@ -52,6 +52,6 @@ t_mcts = toc(t0);
 
 %Print results
 noo.MCTS.plot();
-src.printMainResults("MCTS - Test C=0", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
+src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
 
 save('S2')

@@ -1,35 +1,43 @@
+clear all;
 %% Initialization
+t0 = tic;
+init_param;     %Simulation parameters and other config
+noo.ModelController.init_model_controller; %Simulation Manager 
+t_init = toc(t0);
 %Uniform Random Sampling (URS) parameters
-MAX_NUM_TRACE = 5;  %Bound on num of trace to be simulated
 numSimulatedTraces = 0; %Number of trace currently simulated
 
 %% Uniform Random Sampling
-finalBestRobustness = Inf;
+bestRobustness = Inf;
 %Loop untile falsification or max num traces
 t0 = tic;
-while numSimulatedTraces < MAX_NUM_TRACE
-    %Debug
-    fprintf("[Info] URS - Remaining budget: %d\n", (MAX_NUM_TRACE-numSimulatedTraces));
-    
+budget = URS.BUDGET;
+while budget>0
     %Run a trace
     noo.UniformRandomSampling.run_uniform_random_sampling;
     rob = URS.bestRobustness;
-    if rob < finalBestRobustness
+    if rob < bestRobustness
         bestRobustness = rob;
         bestTrace = URS.trace;
     end
+    
+    %Debug
+    fprintf("[Info] URS - Remaining budget: %d - Cur Rob: %3f - Best Rob: %3f\n", budget, rob, bestRobustness);
+    
     %Update simulations counter
     numSimulatedTraces = numSimulatedTraces + 1;
+    budget = budget - 1;
     
     % Check falsification
     if rob<=0
         fprintf("FALSIFICATION: %d\n", rob);
-        disp(trace);
+        disp(bestTrace);
         break;
     end    
 end
 t_urs = toc(t0);
 
 %Print result
-printMainResults("URS", numSimulatedTraces, bestRobustness, bestTrace, t_urs);
+src.printMainResults("URS", numSimulatedTraces, bestRobustness, bestTrace, t_urs);
 
+save('URS_S2');

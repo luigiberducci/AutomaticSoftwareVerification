@@ -8,12 +8,12 @@ paramNameValStruct.LoadInitialState          = 'off';
 paramNameValStruct.InitialState              = 'Sim.xInitial';
 paramNameValStruct.StopTime                  = string(epsilon);
 paramNameValStruct.SaveOutput                = 'on';
-paramNameValStruct.OutputSaveName            = 'Robustness';
+paramNameValStruct.OutputSaveName            = 'Output';
             
 noo.ModelController.set_input([0 0]);
 
 simOut = sim(MODEL, paramNameValStruct);
-Sim.lastRobustness = simOut.Robustness.signals.values(end);
+Sim.lastRobustness = noo.ModelController.computeRobustness(simOut.Output.signals(1).values, simOut.Output.signals(2).values);
 Sim.xInitial = simOut.get('xFinal');
 Sim.currentSnapshotTime = simOut.get('xFinal').snapshotTime;
 Sim.numInterval = 0;
