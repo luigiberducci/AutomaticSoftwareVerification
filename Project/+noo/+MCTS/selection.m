@@ -36,7 +36,7 @@ function curNodeID = selection()
         % TODO set row struct per prefisso regioni (trovi su nodo)
         % noo.ModelController.set_input(u);
         % noo.ModelController.step_model_controller;
-        % TODO do not simuluate here, handled in HC
+        % TODO do not simuluate here, handled in Search Algo
         
         children = noo.MCTS.getChildren(curNodeID);
     end

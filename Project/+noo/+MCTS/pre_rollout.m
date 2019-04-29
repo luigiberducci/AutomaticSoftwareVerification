@@ -15,7 +15,7 @@ childID = children(min_id);
 % u = noo.MCTS.chooseActionFromNodeID(childID);
 % noo.ModelController.set_input(u);
 % noo.ModelController.step_model_controller;
-% TODO do not simuluate here, handled in HC
+% TODO do not simuluate here, handled in SH
 
 %update simulation trace with the node currently selected for rollout
 MCTS.tracePrefixLen = MCTS.tracePrefixLen + 1;

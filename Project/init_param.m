@@ -4,11 +4,11 @@ global MODEL;
 global SPEC;
 global IN;
 global MCTS;
-global HC;
+global SH;
 
 %% Model filename
 SPEC = 2;
-MODEL = 'automatic_transmission_model_S2_norm';
+MODEL = 'automatic_transmission_model_simple';
 
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
@@ -32,12 +32,12 @@ MCTS.BUDGET = 300;
 MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
-%% Hill climbing
-HC.restarts = 1;
-HC.maxNumNeighbours = 100;
+%% Search (SH) Algorithm
+SH.restarts = 1;
+SH.maxNumNeighbours = 100;
 noo.HillClimbing.init_hill_climbing;    %Initialize dynamic fields
 
-%% Uniform Random Sampling
+%% Uniform Random Sampling (URS)
 URS.BUDGET = 300;
 URS.bestRobustness = Inf;   %Robustness has to be minimized, then init as Inf
 URS.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);

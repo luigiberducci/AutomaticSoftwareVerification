@@ -13,7 +13,7 @@ numSimulatedTraces = 0;     %Counter of simulated traces
 budget = MCTS.BUDGET;
 while budget>0
     %Debug
-    fprintf("[Info] MCTS Budget: %d\n - Best Rob: %3f", budget, bestRobustness);
+    fprintf("[Info] MCTS Budget: %d\n - Best Rob: %3f\n", budget, bestRobustness);
     
     % Selection phase
     nodeID = noo.MCTS.selection();
@@ -27,7 +27,7 @@ while budget>0
     % Selection/Prerollout update MCTS.currentNodeID to the node from which
     % start the rollout phase.
     
-    fprintf("[Info] Expand Node %d (Throttle %f %f, Brake %f %f)\n", nodeID, node.regionInf(1), node.regionSup(1), node.regionInf(2), node.regionSup(2));
+    fprintf("[Info] Expand Node %d (Depth: %d, Throttle %f %f, Brake %f %f)\n", nodeID, node.depth, node.regionInf(1), node.regionSup(1), node.regionInf(2), node.regionSup(2));
     
     % Rollout phase
     noo.MCTS.rollout;

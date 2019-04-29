@@ -2,24 +2,24 @@
 
 [T_full, B_full] = noo.HillClimbing.computeDiscreteInputSignal(IN.inLimInf, IN.inLimSup, IN.numInputSamples);
     
-trial = HC.restarts;
-%HC.numSimulatedTraces = 0; %Moved into init_hill_climbing
+trial = SH.restarts;
+%SH.numSimulatedTraces = 0; %Moved into init_hill_climbing
 
-save("hc_state", 'MODEL','Sim');
+save("SH_state", 'MODEL','Sim');
 
 % DEBUG
-fprintf("[Info] HC - Starting with %d trials\n", trial);
+%fprintf("[Info] RND - Starting with %d trials\n", trial);
 while trial > 0
 	% DEBUG
-    fprintf("[Info] HC - Remaining Trials: %d\n", trial);
+    %fprintf("[Info] RND - Remaining Trials: %d\n", trial);
     %TODO Remove saving/restore of this state
     clear Sim;
-    load("hc_state");
+    load("SH_state");
     
     % init trace that minimizes robustness    
     trace = [];
     trial = trial - 1;
-    HC.numSimulatedTraces = HC.numSimulatedTraces + 1;
+    SH.numSimulatedTraces = SH.numSimulatedTraces + 1;
     curBestRobustness = Inf;
                 
     simStep = 1;
@@ -37,7 +37,7 @@ while trial > 0
         % iAction = 0; % incremental index of actions
         % Tprm = randperm(length(T)); % generate random permutation for neigbours
         % Bprm = randperm(length(B)); % generate random permutation for neigbours
-        % while moveFound == false && iAction < HC.maxNumNeighbours
+        % while moveFound == false && iAction < SH.maxNumNeighbours
                 %Debug
                 %MCTS.traceInf
                 %trace
@@ -64,10 +64,11 @@ while trial > 0
             % break
         % end
     end % while H
+    disp(trace');
     
-    if curBestRobustness<HC.bestRobustness
-        HC.bestRobustness = curBestRobustness;
-        HC.bestTrace = trace;
+    if curBestRobustness<SH.bestRobustness
+        SH.bestRobustness = curBestRobustness;
+        SH.bestTrace = trace;
     end
     if curBestRobustness<=0
         break
