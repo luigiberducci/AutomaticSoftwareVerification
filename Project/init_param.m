@@ -14,11 +14,11 @@ ALGOSRC = "";
 MODEL = 'automatic_transmission_model_simple';
 
 %% Test parameters
-TEST.NUMTEST = 2;
+TEST.NUMTEST = 5;
 TEST.PREFIX  = strrep(datestr(now), ' ', '_');
 TEST.PREFIX  = strrep(TEST.PREFIX, '-', '');
 TEST.logBestRob = [];
-TEST.logRob = [];
+TEST.logRob     = [];
 
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
@@ -38,7 +38,7 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 3;
+MCTS.BUDGET = 100;
 MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
