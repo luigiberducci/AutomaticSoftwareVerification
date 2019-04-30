@@ -1,14 +1,10 @@
 fprintf("[Info] Starting MCTS+%s with Spec %d\n", ALGOSRC, SPEC);
 
 %% Monte Carlo Tree Search (MCTS)
-t0 = tic;
-bestRobustness = Inf;      %Minimize robustness, then init as Inf
-bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
-numSimulatedTraces = 0;     %Counter of simulated traces
 budget = MCTS.BUDGET;
 while budget>0
     %Debug
-    fprintf("[Info] MCTS Budget: %d\n - Best Rob: %3f\n", budget, bestRobustness);
+    fprintf("[Info] MCTS Budget: %d\n - Best Rob: %3f\n", budget, MCTS.bestRobustness);
     
     % Selection phase
     nodeID = noo.MCTS.selection();
@@ -28,16 +24,21 @@ while budget>0
     noo.MCTS.rollout;
     %noo.MCTS.plot;
 
-    numSimulatedTraces = numSimulatedTraces + MCTS.rolloutNumSimTraces;
+    MCTS.numSimulatedTraces = MCTS.numSimulatedTraces + MCTS.rolloutNumSimTraces;
     %Update best robustness and trace
-    if MCTS.rolloutBestRob<bestRobustness
-        bestRobustness = MCTS.rolloutBestRob;
-        bestTrace = MCTS.rolloutBestTrace;
+    if MCTS.rolloutBestRob<MCTS.bestRobustness
+        MCTS.bestRobustness = MCTS.rolloutBestRob;
+        MCTS.bestTrace = MCTS.rolloutBestTrace;
     end
+    
+    % Logging
+    TEST.logRob = [TEST.logRob; MCTS.rolloutBestRob];
+    TEST.logBestRob = [TEST.logBestRob; MCTS.bestRobustness];
+    
     % Check falsification
-    if bestRobustness<=0
+    if MCTS.bestRobustness<=0
         fprintf("[Info] FALSIFICATION: %d\n", rob);
-        disp(bestTrace);
+        disp(MCTS.bestTrace);
         break;
     end
     % Backpropagation phase
@@ -47,10 +48,7 @@ while budget>0
     budget = budget - 1;
     %noo.MCTS.plot;
 end
-t_mcts = toc(t0);
+
 
 %Print results
 noo.MCTS.plot();
-src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
-
-save('MCTS_S2')

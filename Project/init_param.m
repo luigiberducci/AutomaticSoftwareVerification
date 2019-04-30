@@ -6,11 +6,19 @@ global MCTS;
 global SH;
 global SPEC;
 global ALGOSRC;
+global TEST;
 
 %% Model filename
 SPEC = 0;
 ALGOSRC = "";
 MODEL = 'automatic_transmission_model_simple';
+
+%% Test parameters
+TEST.NUMTEST = 2;
+TEST.PREFIX  = strrep(datestr(now), ' ', '_');
+TEST.PREFIX  = strrep(TEST.PREFIX, '-', '');
+TEST.logBestRob = [];
+TEST.logRob = [];
 
 %% Simulation parameters
 Sim.NUMINPUTSIGNALS = 2;
@@ -30,7 +38,7 @@ Sim.numInterval = 0;
 IN = inputDefinition();
 
 %% MCTS
-MCTS.BUDGET = 300;
+MCTS.BUDGET = 3;
 MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
@@ -41,7 +49,7 @@ SH.temperature = 0;         % Used in Search Algo: SA
 noo.HillClimbing.init_hill_climbing;    %Initialize dynamic fields
 
 %% Uniform Random Sampling (URS)
-URS.BUDGET = 300;
+URS.BUDGET = MCTS.BUDGET;
 URS.bestRobustness = Inf;   %Robustness has to be minimized, then init as Inf
 URS.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
 

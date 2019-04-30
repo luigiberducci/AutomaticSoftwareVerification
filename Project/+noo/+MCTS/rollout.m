@@ -10,6 +10,10 @@ switch ALGOSRC
         %Run Hill Climbing search
         noo.HillClimbing.run_hill_climbing;
     case "SA"
+        %Reset dynamic fields in SH struct
+        noo.SimulatedAnnealing.init_simulated_annealing;
+        %Run Simulated Annealing search
+        noo.SimulatedAnnealing.run_simulated_annealing;
     otherwise
         error("Specify the Search Algo in ALGOSRC")
 end

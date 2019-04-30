@@ -11,6 +11,10 @@ MCTS.availID = MCTS.availID + 1; %Increment next availablplote node identifier
 
 %It is the max robustness in the whole tree (used in UCB computation)
 MCTS.maxRobustness = -Inf;  
+MCTS.bestRobustness = Inf;      %Minimize robustness, then init as Inf
+MCTS.bestTrace = zeros(Sim.NUMCTRLPOINTS, Sim.NUMINPUTSIGNALS);
+MCTS.numSimulatedTraces = 0;     %Counter of simulated traces
+
 
 % Rollout result variables
 MCTS.rolloutBestRob = Inf;  
