@@ -57,8 +57,8 @@ function IN = inputDefinition()
     numSamplesThrottle = 100;    %Discretization of Throttle signal
     numSamplesBrake    = 300;    %Discretization of Brake signal
 
-    numRegionThrottle = 3;
-    numRegionBrake    = 6;
+    numRegionThrottle = 2;
+    numRegionBrake    = 4;
 
     %Create input structure to give as input
     IN.inLimInf = [ThrottleLimInf BrakeLimInf];

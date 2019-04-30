@@ -14,8 +14,12 @@ function plot()
         	ucb = node.score;
             label = sprintf("Bst Rob: %.2f\nn: %d\nh: %d", ucb, node.n, node.depth);
         else
-            ucb = noo.MCTS.computeUCB(node);
-            label = sprintf("UCB: %.2f\nn: %d\nh: %d", ucb, node.n, node.depth);
+            if node.depth<=1
+                ucb = noo.MCTS.computeUCB(node);
+                label = sprintf("UCB: %.2f\nn: %d, h: %d", ucb, node.n, node.depth);
+            else
+                label = "";
+            end
         end
                 
         %label = sprintf("ID: %d\nT: [%.2f, %.2f]\nB: [%.2f, %.2f]\nUCB: %.2f\nn: %.0f",...

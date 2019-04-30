@@ -17,11 +17,11 @@ while budget>0
     
     % Selection phase
     nodeID = noo.MCTS.selection();
-    noo.MCTS.plot;
+    %noo.MCTS.plot;
     node = MCTS.nodes(nodeID);
     if node.depth < Sim.NUMCTRLPOINTS
         noo.MCTS.expansion(nodeID);
-        noo.MCTS.plot;
+        %noo.MCTS.plot;
         noo.MCTS.pre_rollout;
     end
     % Selection/Prerollout update MCTS.currentNodeID to the node from which
@@ -31,7 +31,7 @@ while budget>0
     
     % Rollout phase
     noo.MCTS.rollout;
-    noo.MCTS.plot;
+    %noo.MCTS.plot;
 
     numSimulatedTraces = numSimulatedTraces + MCTS.rolloutNumSimTraces;
     %Update best robustness and trace
@@ -40,17 +40,17 @@ while budget>0
         bestTrace = MCTS.rolloutBestTrace;
     end
     % Check falsification
-    if bestRobustness<0
-        fprintf("FALSIFICATION: %d\n", rob);
+    if bestRobustness<=0
+        fprintf("[Info] FALSIFICATION: %d\n", rob);
         disp(bestTrace);
-        return;
+        break;
     end
     % Backpropagation phase
     noo.MCTS.backpropagation(MCTS.currentNodeID, MCTS.rolloutBestRob);
     
     %Reduce budget
     budget = budget - 1;
-    noo.MCTS.plot;
+    %noo.MCTS.plot;
 end
 t_mcts = toc(t0);
 

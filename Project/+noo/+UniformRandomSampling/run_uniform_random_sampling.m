@@ -16,5 +16,10 @@ while Sim.currentSnapshotTime < Sim.TIMEHORIZON
     URS.bestRobustness = min(URS.bestRobustness, Sim.lastRobustness);
     step = step + 1;
 end
+
+% Clear the workspace from useless variables
+clear step;
+clear u;
+clear i;
     
 

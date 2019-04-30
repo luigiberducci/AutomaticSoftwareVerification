@@ -57,13 +57,8 @@ while trial > 0
         noo.ModelController.step_model_controller;
         curBestRobustness = Sim.lastRobustness;
                     % moveFound = true;
-        trace = [trace; u]; % extend trace
-                % end
-        % end
-        % if moveFound == false 
-            % break
-        % end
-    end % while H
+        trace = [trace; u]; % extend trace      
+    end
     disp(trace');
     
     if curBestRobustness<SH.bestRobustness
