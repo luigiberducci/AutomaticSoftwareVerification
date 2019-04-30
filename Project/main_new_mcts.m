@@ -52,3 +52,4 @@ end
 
 %Print results
 noo.MCTS.plot();
+src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);

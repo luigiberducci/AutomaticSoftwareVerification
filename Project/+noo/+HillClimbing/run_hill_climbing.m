@@ -77,6 +77,7 @@ while trial > 0
         SH.bestRobustness = curBestRobustness;
         SH.bestTrace = trace;
     end
+    HC.bestTrace
     if curBestRobustness<=0
         break
     end
