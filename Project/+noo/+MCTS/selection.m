@@ -16,11 +16,11 @@ function curNodeID = selection()
     while not(isempty(children))
         MCTS.tracePrefixLen = MCTS.tracePrefixLen + 1;
         max_val = 0;
-        max_child = -1;     %%PROBLEM HERE
+        max_child = 1;     %% PROBLEM HERE
         for childID = children
             child = MCTS.nodes(childID);
             childVal = noo.MCTS.computeUCB(child);
-            if childVal>max_val
+            if childVal>=max_val
                 max_val = childVal;
                 max_child = childID;
                 % set the prefix of the trace according to ancestors
