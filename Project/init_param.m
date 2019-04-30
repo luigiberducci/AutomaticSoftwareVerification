@@ -1,13 +1,15 @@
 %% Global variables
 global Sim;
 global MODEL;
-global SPEC;
 global IN;
 global MCTS;
 global SH;
+global SPEC;
+global ALGOSRC;
 
 %% Model filename
-SPEC = 2;
+SPEC = 0;
+ALGOSRC = "";
 MODEL = 'automatic_transmission_model_simple';
 
 %% Simulation parameters
@@ -33,8 +35,9 @@ MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
 %% Search (SH) Algorithm
-SH.restarts = 1;
-SH.maxNumNeighbours = 100;
+SH.restarts = 1;            % Used in Search Algo: RS, HC, SA
+SH.maxNumNeighbours = 10;   % Used in Search Algo: HC, SA
+SH.temperature = 0;         % Used in Search Algo: SA
 noo.HillClimbing.init_hill_climbing;    %Initialize dynamic fields
 
 %% Uniform Random Sampling (URS)

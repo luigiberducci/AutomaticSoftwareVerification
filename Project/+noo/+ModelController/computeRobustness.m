@@ -22,7 +22,7 @@ function minRob = computeRobustness(speed, gear)
             %Robustness is an OR,then compute the max between the two terms
             rob = max(sub1, sub2);
         otherwise
-            warning("Specification not valid.");
+            rob = Inf;
     end
     %Return the minimum robustness in the simulated period
     minRob = min(rob);

@@ -6,10 +6,10 @@ trial = SH.restarts;
 save("SH_state", 'MODEL','Sim');
 
 % DEBUG
-fprintf("[Info] HC - Starting with %d trials\n", trial);
+fprintf("[Info] SA - Starting with %d trials\n", trial);
 while trial > 0
 	% DEBUG
-    fprintf("[Info] HC - Remaining Trials: %d\n", trial);
+    fprintf("[Info] SA - Remaining Trials: %d\n", trial);
     %TODO Remove saving/restore of this state
     clear Sim;
     load("SH_state");
@@ -18,6 +18,7 @@ while trial > 0
     trace = [];
     trial = trial - 1;
     SH.numSimulatedTraces = SH.numSimulatedTraces + 1;
+    
     curBestRobustness = Inf;
                 
     simStep = 1;
@@ -50,7 +51,7 @@ while trial > 0
                 noo.ModelController.set_visit_input(u);
                 noo.ModelController.visit_next;
                 r = Sim.visitRobustness;
-                if r <= curBestRobustness 
+                if SH.temperature == 0
                     % a not worst neigbourd has being found
                     % go to neigbourd
                     noo.ModelController.set_input(u);
@@ -59,18 +60,38 @@ while trial > 0
                     moveFound = true;
                     trace = [trace; u]; % extend trace
                 else
-                    % no best action found, update "best worst"
-                    if r <= bestWorstRob
-                        bestWorstRob = r;
-                        bestWorstU = u;
+                    % temperature > 0
+                    delta = curBestRobustness - r;
+                    if delta > 0 
+                        noo.ModelController.set_input(u);
+                        noo.ModelController.step_model_controller;
+                        curBestRobustness = Sim.lastRobustness;
+                        moveFound = true;
+                        trace = [trace; u]; % extend trace
+                    else
+                        prob = exp(delta/SH.temperature);
+                        if rand <= prob
+                            noo.ModelController.set_input(u);
+                            noo.ModelController.step_model_controller;
+                            curBestRobustness = Sim.lastRobustness;
+                            moveFound = true;
+                            trace = [trace; u]; % extend trace
+                        else
+                            if r <= bestWorstRob 
+                                bestWorstRob = r;
+                                bestWorstU = u;
+                            end
+                        end
                     end
                 end
         end
+        % This check is to avoid incomplete trace (it finished the neighs)
         if moveFound == false 
             noo.ModelController.set_input(bestWorstU);
             noo.ModelController.step_model_controller;
             trace = [trace; bestWorstU];
         end
+        SH.temperature = SH.temperature + 1;
     end
     
     if curBestRobustness < SH.bestRobustness

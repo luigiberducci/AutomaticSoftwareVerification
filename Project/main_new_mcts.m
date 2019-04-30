@@ -1,9 +1,4 @@
-clear all;
-%% Initialization
-t0 = tic;
-init_param;     %Simulation parameters and other config
-noo.ModelController.init_model_controller; %Simulation Manager 
-t_init = toc(t0);
+fprintf("[Info] Starting MCTS+%s with Spec %d\n", ALGOSRC, SPEC);
 
 %% Monte Carlo Tree Search (MCTS)
 t0 = tic;
@@ -58,4 +53,4 @@ t_mcts = toc(t0);
 noo.MCTS.plot();
 src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
 
-save('S2')
+save('MCTS_S2')
