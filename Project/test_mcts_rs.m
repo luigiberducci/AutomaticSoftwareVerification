@@ -9,8 +9,8 @@ for test = 1:TEST.NUMTEST
     init_param;     %Simulation parameters and other config
     SPEC = 2;
     ALGOSRC = "RS"; % Possible values: RS, HC, SA
-    inner_prefix = sprintf("MCTS_%s_%d",ALGOSRC, SPEC);
-    out_dir = "test/" + inner_prefix;
+    inner_prefix = sprintf("MCTS_%s_%d_%f",ALGOSRC, SPEC, MCTS.C);
+    inner_prefix = strrep(inner_prefix, '.', '');    out_dir = "test/" + inner_prefix;
     t_init = toc(t0);
     
     t0 = tic;

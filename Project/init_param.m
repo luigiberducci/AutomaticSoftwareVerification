@@ -1,3 +1,6 @@
+% Random to avoid repeatition at startup
+rng('shuffle');
+
 %% Global variables
 global Sim;
 global MODEL;
