@@ -17,7 +17,7 @@ ALGOSRC = "";
 MODEL = 'automatic_transmission_model_simple';
 
 %% Test parameters
-TEST.NUMTEST = 5;
+TEST.NUMTEST = 10;
 TEST.PREFIX  = strrep(datestr(now), ' ', '_');
 TEST.PREFIX  = strrep(TEST.PREFIX, '-', '');
 TEST.logBestRob = [];
@@ -42,7 +42,7 @@ IN = inputDefinition();
 
 %% MCTS
 MCTS.BUDGET = 100;
-MCTS.C = 0.5;
+MCTS.C = 0.25;
 noo.MCTS.init_mcts;
 
 %% Search (SH) Algorithm

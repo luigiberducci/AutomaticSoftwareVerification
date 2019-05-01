@@ -37,7 +37,7 @@ while budget>0
     
     % Check falsification
     if MCTS.bestRobustness<=0
-        fprintf("[Info] FALSIFICATION: %d\n", rob);
+        fprintf("[Info] FALSIFICATION: %d\n", MCTS.bestRobustness);
         disp(MCTS.bestTrace);
         break;
     end
@@ -52,4 +52,4 @@ end
 
 %Print results
 noo.MCTS.plot();
-src.printMainResults("MCTS", numSimulatedTraces, bestRobustness, bestTrace, t_mcts);
+%src.printMainResults("MCTS", MCTS.numSimulatedTraces, MCTS.bestRobustness, MCTS.bestTrace, t_mcts);
