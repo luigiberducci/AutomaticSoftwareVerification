@@ -26,37 +26,60 @@
 %--Paper--
 
 \section{ Abstract }
-Lorem Impsum
+A general introduction to what we have done and what we achieved.
+Foot note link to github
 \pagebreak
 
-\section{ Background }
-Lorem Ipsum \\
-\pagebreak
+% \section{ Background }
 
-\subsection{ Model, Specifications and Robustness Metric }
-Lorem Ipsum \\
+\section{ Model, Specifications and Robustness Metric }
+\begin{itemize}
+    \item model used
+    \item S1 and S2
+    \item Robustness def from paper
+\end{itemize}
 
-\subsection{ Two Layer Search }
-Lorem Ipsum \\
+\section{ Baseline: URS }
+The baseline
 
-\subsection{ MCTS }
-Lorem Ipsum \\
-\pagebreak
+\section{ Two Layer Search }
+\begin{itemize}
+    \item layer 1 MCTS balance explor exploit
+    \item layer 2 search algo
+\end{itemize}
 
-\section{ Search Algorithms }
-\subsection{ URS }
+\section{ Layer I: MCTS }
+\begin{itemize}
+    \item TODO follow the video to concisely explain
+    \item selection
+    \item expansion
+    \item rollout
+    \item backpropagation
+    \item ubc and C
+    \item tree animation gif
+\end{itemize}
+
+\subsection{ Layer II: Search Algorithms }
+different algo to test the sinergy with MCTS and with the falsification in general. also vs overhead
+
 \subsection{ Random Search }
+Fast, but less smart
 \subsection{ Hill Climbing }
+Slow but smarter
 \subsection{ Simulated Annealing }
-Lorem Ipsum \\
+Balance fast and smart, also balance the bias of MCTS toward exploration (or the opposite?)
 \pagebreak
 
 \section{ Experiments and Results }
-Lorem Ipsum \\
+Oveerview of the different test, how many times and the difficutly overcomed (e.g., matlab poor randomness, o.o. poor peerformances and not correctness)
 
 \subsection{ Hyperparameters }
+General choises of C, region and quantization vs brancing factor
 \subsection{ Experiments }
+detail of each experiment
 \subsection{ Results }
-\pagebreak
+table with results and plot for robustnes and graph
+
+link to saved workspaces
 
 \end{document}
