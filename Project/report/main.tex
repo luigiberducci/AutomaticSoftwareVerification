@@ -36,16 +36,28 @@ In this project, we focused on Falsification of Temporal Logic Specification and
 
 \section{Two-Layered Falsification}
 \subsection{Introduction}
-general explanation of the two-layered search
-goal in search process: item balance explor exploit
+The process of falsification aims to find a counter example to a given specification, such example typically are \textit{hard to find}  errors. Typically the search space is huge and the process of verification by simulating is quite expensive, thus a clever strategy to drive the search and properly invest the simulation time is essential.
+
+Following the work done in [paper] we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search in which, at each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region an estimation on how promising they are (see section..). 
+On the bottom a generic search algorithm (see section ..) further investigate promising regions at an finer grain coming from the top layer and updates their value of "promisingness".
+
+The MCTS is often used in automated game play (see alphago). This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to fin it. 
+
+The MCTS allow to fine tune the balance between exploration and exploitation at a macroscopic level while the choice of the second layer acts in the same way but atomically over points in the search space.
 
 \subsection{Upper-layer: MCTS}
+The MCTS aims to iteratively build a tree $T=(V,E)$ where nodes in $V$ are labelled with a score $s$ and a counter $n$ and edges in $E$ are labelled with actions. At the start the tree is initialized as a root node with $s=Inf$ and $n=0$. The execution evolves in different phases.
+
+\paragraph{Selection:} Starting from the root until reaching a leaf (of the MCTS tree) we move to the node $n$ maximizing UCB($n$) (see ...). 
+The leaf, say $L$ will be sampled. If $L$ is sampled for the first time then Rollout($L$), else Expansion($L$).
+
+\paragraph{Expansion:} For each action $a$ available from $L$ we extend $T$ with a new node $v $  with $s=Inf$, $n=0$ and edge label $a$. Then a random child of $L,$ say $C_L,$ is chosen to do Rollout($C_L$).
+
+\paragraph{Rollout(L)} For each ancestor of $L$ starting from the root till $L$ itself, the search algorithm (see section) is run in the region of the selected node. Then starting from L, the rest of the trace is simulated driven by the search. At the end the trace will have a robustness value of $v$ which will be used as an estimate for $L$ and its ancestors by means of Backpropagation($L,v$).
+
+\paragraph{Backpropagation(L,v):} From $L$ till the root, going trough $L$'s ancestors say $L=a_1, a_2, \dots, a_n=root$ , generic $a_i$is updated incrementing $n$ and setting $s=max\{n.s, v\}.
+\pagebreak
 \begin{itemize}
-    \item TODO follow the video to concisely explain
-    \item selection
-    \item expansion
-    \item rollout
-    \item backpropagation
     \item ubc and C
     \item tree animation gif
 \end{itemize}
