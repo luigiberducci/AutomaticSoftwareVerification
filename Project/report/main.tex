@@ -66,15 +66,47 @@ Balance fast and smart, also balance the bias of MCTS toward exploration (or the
 \section{Experimental phase}
 focus on experimental details, which model, which specification, which algorithms adopted.
 
-\subsection{Model, Specifications and Robustness Metric}
-\begin{itemize}
-    \item model used
-    \item S1 and S2
-    \item how we implemented the robustness in each specification (mention the change in the rob for 2 spec)
-\end{itemize}
+\subsection{Model and Specifications}
+The benchmark adopted is the Automatic Transmission by MathWorks, provided in Simulink. It models a vehicle equipped with a trasmission controller and allows the user to change two input signals: the     throttle and the brake.
 
-\subsection{Baseline: URS}
-The baseline
+There are several specifications defined on this model because it is a common benchmark in verification papers. Starting from the reference paper and \cite{bardh2014benchmarks}, we selected two           specification:
+
+\begin{enumerate}
+    \item The engine speed never reaches 120.
+    \item If the vehicle gear is 3 then the speed is always greater than 20.
+\end{enumerate}
+
+We selected these two specifications because they are representative of different kind of search. The first one is easier to falsify, compared with the second one.
+
+\subsection{Implementation of Robustness metric}
+In order to undestand the difficulty of falsification of the second specification, we need to spend a few words on the computation of robustness metric used to drive the search.
+
+According to the definition of Robustness given in\cite{fainekos2006robustness}, this metric gives us a measure of how the state of the model is far from the falsification. In the first specification,    the computation of Robustness is simply the difference between the reference speed and the current speed. Conversely, in the second specification the computation is more complex and can be summarized by  the following steps:
+
+\begin{enumerate}
+\item Since the second specification is an implication, we wrote it as an \texttt{OR}.
+\item The Robustness of the \texttt{OR} operator is the max value of the Robustness computed in the two subformulas.
+\item The first subformula is the absolute value of the difference between the current gear and the reference gear (3).
+\item The second subformula is the difference between the current speed and the reference speed (20).
+\end{enumerate}
+
+Notice that the value of the second subformula is positive if the current speed is greater than 20, otherwise is negative. Conversely, the value of the first subformula is a small positive integer.
+
+As a result, when the gear is different from the reference one (3) then the first subformula dominates the Robustness computation. When the gear is the third one, then the value could be dominated by     the second subformula only if it is greater than 20 and then positive. Then, the resulting metric space is characterized by long plateau when the current speed is far from 20 and local minima because of  the different unit of measurement for gear and speed.
+
+\subsection{The proposed baseline: \texttt{URS}}
+The two specifications above have been implemented in an external function in order to maintain a single model file. The Simulink model is characterized by two output blocks, respectively the \textit{speed} and the \textit{gear}. The external function computes the robustness according to the specification, described by a parameter in the configuration file.
+\\ \\
+The second specification S2 caused too long time to reach falsification and we decided to change its implementation in order to make it suitable to the time and resources that we can use. In particular, one of the main problem of S2 is the different units of measurment that lead to local minima. In fact, whilst speed is between 0 and 100, the gear is an integer value between 1 and 4.
+
+In contrast with the original definition of the Robustness, we proposed to normalize the second subformula of S2 according to the unit scale. Since the speed goes from 0 to 100, we normalize the second subformula dividing by 100. In this way, the Robustness metric is still characterized by long plateau which make the search not trivial but we reduced the number of local minima.
+
+\begin{figure}[h]
+    \centering
+    \textbf{Uniform Random Sampling - Robustness Distribution}\par
+    \includegraphics[width=0.5\linewidth]{img/urs_rob_distr.jpg}
+    \caption{Robustness distribution over 100 simulation of URS search. This random distribution highlights that there is no learning in URS. Moreover, all the values are in [0,1] because we are using the normalized version of specific \texttt{S2} and is rather likely to reach the third gear at least once during the simulation with random values.}
+\end{figure}
 
 \subsection{Experiments}
 detail of each experiment
@@ -93,5 +125,8 @@ General choises of C, region and quantization vs brancing factor
 link to saved workspaces
 
 \section{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{biblio}
 
 \end{document}
