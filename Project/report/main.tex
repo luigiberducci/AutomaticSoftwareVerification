@@ -11,8 +11,8 @@
 \textheight=9.0in
 \headsep=0.25in
 
-\title{ Monte Carlo Tree Search driven Falsification }
-\author{ Lugi Berducci \and Alessandro Steri }
+\title{Monte Carlo Tree Search driven Falsification}
+\author{Lugi Berducci \and Alessandro Steri}
 \date{\today}
 
 \begin{document}
@@ -25,30 +25,21 @@
 
 %--Paper--
 
-\section{ Abstract }
-A general introduction to what we have done and what we achieved.
-Foot note link to github
+\section{Abstract}
+Verification of hybrid systems is often based on simulations which try to reproduce real scenarios and test the all system. Even if simulation-based verification is the only chance to verify such complex systems, it requires a large amount of time and resources.
+
+Specifically, the process to find anomalies and faults is called falsification and it consists of finding a scenario (a trace of disturbances) that lead the system to falsify the requirements, described by formal specifications.
+
+In this project, we focused on Falsification of Temporal Logic Specification and inspired on the most recent works in this field that adopt optimized search algorithm in order to speed up the Falsification process.
+
 \pagebreak
 
-% \section{ Background }
+\section{Two-Layered Falsification}
+\subsection{Introduction}
+general explanation of the two-layered search
+goal in search process: item balance explor exploit
 
-\section{ Model, Specifications and Robustness Metric }
-\begin{itemize}
-    \item model used
-    \item S1 and S2
-    \item Robustness def from paper
-\end{itemize}
-
-\section{ Baseline: URS }
-The baseline
-
-\section{ Two Layer Search }
-\begin{itemize}
-    \item layer 1 MCTS balance explor exploit
-    \item layer 2 search algo
-\end{itemize}
-
-\section{ Layer I: MCTS }
+\subsection{Upper-layer: MCTS}
 \begin{itemize}
     \item TODO follow the video to concisely explain
     \item selection
@@ -59,27 +50,48 @@ The baseline
     \item tree animation gif
 \end{itemize}
 
-\subsection{ Layer II: Search Algorithms }
+\subsection{Lower-layer: Search Algorithms}
 different algo to test the sinergy with MCTS and with the falsification in general. also vs overhead
+brief explaination of the search algorithms.
 
-\subsection{ Random Search }
+\subsubsection{Random Search}
 Fast, but less smart
-\subsection{ Hill Climbing }
+\subsubsection{Hill Climbing}
 Slow but smarter
-\subsection{ Simulated Annealing }
+\subsubsection{Simulated Annealing}
 Balance fast and smart, also balance the bias of MCTS toward exploration (or the opposite?)
+
 \pagebreak
 
-\section{ Experiments and Results }
+\section{Experimental phase}
+focus on experimental details, which model, which specification, which algorithms adopted.
+
+\subsection{Model, Specifications and Robustness Metric}
+\begin{itemize}
+    \item model used
+    \item S1 and S2
+    \item how we implemented the robustness in each specification (mention the change in the rob for 2 spec)
+\end{itemize}
+
+\subsection{Baseline: URS}
+The baseline
+
+\subsection{Experiments}
+detail of each experiment
+
+\pagebreak
+
+\section{Analysis of the results}
 Oveerview of the different test, how many times and the difficutly overcomed (e.g., matlab poor randomness, o.o. poor peerformances and not correctness)
 
-\subsection{ Hyperparameters }
-General choises of C, region and quantization vs brancing factor
-\subsection{ Experiments }
-detail of each experiment
-\subsection{ Results }
+\subsection{Comments}
 table with results and plot for robustnes and graph
 
+\subsection{Hyperparameters}
+General choises of C, region and quantization vs brancing factor
+
 link to saved workspaces
+
+\section{Conclusion}
 
 \end{document}
