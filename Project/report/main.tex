@@ -45,7 +45,7 @@ The MCTS is often used in automated game play (see alphago). This clearly underl
 
 The MCTS allow to fine tune the balance between exploration and exploitation at a macroscopic level while the choice of the second layer acts in the same way but atomically over points in the search space.
 
-\subsection{Upper-layer: MCTS}
+\subsection{Upper-layer: MCTS}~\label{sec:MCTS}
 The MCTS aims to iteratively build a tree $T=(V,E)$ where nodes in $V$ are labelled with a score $s$ and a counter $n$ and edges in $E$ are labelled with actions. At the start the tree is initialized as a root node with $s=Inf$ and $n=0$. The execution evolves in different phases.
 
 \paragraph{Selection:} Starting from the root until reaching a leaf (of the MCTS tree) we move to the node $n$ maximizing UCB($n$) (see ...). 
@@ -55,24 +55,42 @@ The leaf, say $L$ will be sampled. If $L$ is sampled for the first time then Rol
 
 \paragraph{Rollout(L)} For each ancestor of $L$ starting from the root till $L$ itself, the search algorithm (see section) is run in the region of the selected node. Then starting from L, the rest of the trace is simulated driven by the search. At the end the trace will have a robustness value of $v$ which will be used as an estimate for $L$ and its ancestors by means of Backpropagation($L,v$).
 
-\paragraph{Backpropagation(L,v):} From $L$ till the root, going trough $L$'s ancestors say $L=a_1, a_2, \dots, a_n=root$ , generic $a_i$is updated incrementing $n$ and setting $s=max\{n.s, v\}.
+\paragraph{Backpropagation(L,v):} From $L$ till the root, going trough $L$'s ancestors say $L=a_1, a_2, \dots, a_n=root$ , generic $a_i$ is updated incrementing $n$ and setting $s=max\{n.s, v\}$.
+
+i\paragraph{UCB:} In the most general MCTS implementation, given a node $n$ its UCB value is computed as FOO, where the idea behind the parameter $C$ is to fine-tune exploration vs exploitation. When considering the falsification problem thus using robustness as heuristic we face two problem:
+\begin{itemize}
+    \item Robustness can have positive yet negative values while classical UCB is designed to work with only positive value. 
+    \item Generally, given a specification it is not possible to give an upper bound to the robustness domain. 
+\end{itemize}
+To overcome both the problems, along the line of CITE, we used U.. defined as BAR.
+
 \pagebreak
 \begin{itemize}
-    \item ubc and C
     \item tree animation gif
 \end{itemize}
 
 \subsection{Lower-layer: Search Algorithms}
+In the very end, the falsification task boils down to a search in the space of the states. 
+We aim to find a falsifying trace of $k$ disturbances, where $k$ is the number of desired control points. 
+To do so the MCTS (see Section~\ref{sec:MCTS}) when selects a node at depth $h$ to rollout from it's basically defining a meta-trace $\hat{T}$. The first $h$ meta-disturb of $\hat{T}$ ($\hat{T}$ prefix) are regions of the input space in which to bound the search, and in the suffix the search is allowed in the whole input space. 
+One of the following search algorithm is then used to produce a trace $T$ accordingly with the semantic of $\hat{T}$.
+
 different algo to test the sinergy with MCTS and with the falsification in general. also vs overhead
 brief explaination of the search algorithms.
 
-\subsubsection{Random Search}
-Fast, but less smart
-\subsubsection{Hill Climbing}
-Slow but smarter
-\subsubsection{Simulated Annealing}
-Balance fast and smart, also balance the bias of MCTS toward exploration (or the opposite?)
+\subsubsection{Random Search: MCTS left alone}
+To have a way to evaluate the contribution purely given by the MCTS layer, we decided to implement a fast yet dumb search strategy.
+Given a meta-trace $\hat{T}$, for each control point $k$ in $\hat{T}$, RS basically samples u.a.r. a disturbance from the appropriate region for such control point.
+This result in a very fast yet only exploring algorithm. 
 
+\subsubsection{Hill Climbing: the greedy}
+Here, the classical Hill Climbing implementation has been used. The only difference is that, since eventually we need a full trace (a trace having a disturbance for each control point), in the case a not worst neighbour is found a random one is selected. To have a stronger falsification power, at the cost of a longer simulation time restart has been implemented. On the other hand to speed up the simulation, at the cost of a weaker falsification power it is possible to limit the number of
+neighbour tested by the algorithm at each step. 
+Clearly this search strategy is way clever and effective than RS but the simulation time needed to carry on the falsification process whit a non trivial property to falsify is of another order of magnitude.
+
+\subsubsection{Simulated Annealing: the impatient}
+Again, classical search algorithm, basically an HC enriched with a notion of temperature or, as it is in this case, the number of simulated trace. The higher the temperature the hardest is to make a pejorative move. 
+The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC.
 \pagebreak
 
 \section{Experimental phase}
