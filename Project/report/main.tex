@@ -2,6 +2,7 @@
 
 \usepackage{sectsty}
 \usepackage{graphicx}
+\usepackage{multirow}
 
 % Margins
 \topmargin=-0.45in
@@ -36,12 +37,12 @@ In this project, we focused on Falsification of Temporal Logic Specification and
 
 \section{Two-Layered Falsification}
 \subsection{Introduction}
-The process of falsification aims to find a counter example to a given specification, such example typically are \textit{hard to find}  errors. Typically the search space is huge and the process of verification by simulating is quite expensive, thus a clever strategy to drive the search and properly invest the simulation time is essential.
+The process of falsification aims to find a counter example to a given specification, such example typically are \textit{hard to find}  errors. Typically the search space is huge and the process of verification through simulation is quite expensive, thus a clever strategy to drive the search and properly invest the simulation time is essential.
 
-Following the work done in [paper] we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search in which, at each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region an estimation on how promising they are (see section..). 
-On the bottom a generic search algorithm (see section ..) further investigate promising regions at an finer grain coming from the top layer and updates their value of "promisingness".
+Following the work done in \cite{zhang2018two} we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search in which, at each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region an estimation on how promising they are (see section..). 
+On the bottom a generic search algorithm (see section ..) further investigate promising regions at an finer grain coming from the top layer and updates their value of "promisingness" (maybe confidence??).
 
-The MCTS is often used in automated game play (see alphago). This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to fin it. 
+The MCTS is often used in automated game play (see alphago). This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to find it. 
 
 The MCTS allow to fine tune the balance between exploration and exploitation at a macroscopic level while the choice of the second layer acts in the same way but atomically over points in the search space.
 
@@ -138,9 +139,43 @@ In contrast with the original definition of the Robustness, we proposed to norma
     \caption{Robustness distribution over 100 simulation of URS search. This random distribution highlights that there is no learning in URS. Moreover, all the values are in [0,1] because we are using the normalized version of specific \texttt{S2} and is rather likely to reach the third gear at least once during the simulation with random values.}
 \end{figure}
 
-\subsection{Experiments}
-detail of each experiment
+\pagebreak
 
+\subsection{Experiments}
+In order to evaluate the effectiveness of the proposed falsification framework, we executed a bunch of experiments on the Automatic Transmission model considering several search algorithms: Uniform Random Sampling (URS), MCTS with Random Search (MCTS+RS), MCTS with Hill Climbing (MCTS+HC), MCTS with Simulated Annealing (MCTS+SA).
+
+Since the execution of experiments is based on randomness, we repeated the same experiment 10 times to ensure more confident results.
+
+First of all, we observed that the effectiveness of MCTS is based on its capacity to build the complete tree. In fact, the MCTS algorithm is characterized by a inherent phase of exploration which allows to have a general view of the space (tree width) and the time (tree height). Only when the tree is complete, the MCTS algorithm results effective and specializes the search.
+As a consequence, if the branching factor of the nodes is too high, the number of simulation required to build the entire tree is huge and the MCTS doesn't result effective, compared with the URS. 
+
+Thus, in order to exploit the power of MCTS, we tuned the split parameters for the input signals. The Speed signal has been split into 2 regions and the Brake signal has been split into 3 regions, then the branching factor of the tree is 6. In the original paper \cite{zhang2018two}, they
+adopted a different tuning but we observed that such tuning is not effective compared with the URS algorithm. Moreover, for reason of time and resources, the experiments below have been configured with budget parameter equal to 100, it means that the maximum number of iterations of MCTS is 100 and then this is an upperbound in the number of simulations.
+
+The table below [ref] shows the obtained results varying the parameter C which balance the value of exploration and exploitation in the UCB formula.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & \multirow{2}{*}{Budget} & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time} \\ \cline{5-9} 
+\multicolumn{1}{|c|}{}                      &                    &                         &                               & min       & avg      & var      & tot        & trace        \\ \hline
+URS                                         & -----              & 100                     & 1/10                          &           &          &          &            &              \\
+MCTS+RS                                     & 0.500              & 100                     & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.500              & 100                     & 7/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.500              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
+MCTS+RS                                     & 0.250              & 100                     & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.250              & 100                     & 7/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.250              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
+MCTS+RS                                     & 0.125              & 100                     & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.125              & 100                     & 7/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.125              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
+MCTS+RS                                     & 0.000              & 100                     & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.000              & 100                     & 7/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.000              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
+\end{tabular}
+\caption{Result of experiments. Comparison between MCTS and URS, varying the parameter C which balance exploration and exploitation in the UCB formula. The input signals have been split into 2 and 3 region.}
+\end{table}
 \pagebreak
 
 \section{Analysis of the results}
