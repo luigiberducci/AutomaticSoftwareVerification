@@ -152,29 +152,39 @@ As a consequence, if the branching factor of the nodes is too high, the number o
 Thus, in order to exploit the power of MCTS, we tuned the split parameters for the input signals. The Speed signal has been split into 2 regions and the Brake signal has been split into 3 regions, then the branching factor of the tree is 6. In the original paper \cite{zhang2018two}, they
 adopted a different tuning but we observed that such tuning is not effective compared with the URS algorithm. Moreover, for reason of time and resources, the experiments below have been configured with budget parameter equal to 100, it means that the maximum number of iterations of MCTS is 100 and then this is an upperbound in the number of simulations.
 
-The table below [ref] shows the obtained results varying the parameter C which balance the value of exploration and exploitation in the UCB formula.
+The tables below [ref] show the obtained results varying the parameter C which balance the value of exploration and exploitation in the UCB formula. The tables contain the following fields:
+\begin{itemize}
+    \item Algo: Search algorithm adopted.
+    \item C: Value of parameter C.
+    \item Avg Trace Falsification: Number of trace before falsification, considering only the tests which falsify the specification.
+    \item Success Rate: Number of tests which falsify the specification.
+    \item Robustness: statistics on robustness value.
+    \item Time: statistics on elapsed time, both time are considered as average of the all number of experiments.
+\end{itemize}
 
-\begin{table}[h]
+
+\begin{table}[ht]
 \centering
-\begin{tabular}{|l|l|l|l|l|l|l|l|l|}
+\title{Experiments on specification \texttt{S2}}
+\begin{tabular}{|l|l|c|c|c|c|c|c|c|}
 \hline
-\multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & \multirow{2}{*}{Budget} & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time} \\ \cline{5-9} 
-\multicolumn{1}{|c|}{}                      &                    &                         &                               & min       & avg      & var      & tot        & trace        \\ \hline
-URS                                         & -----              & 100                     & 1/10                          &           &          &          &            &              \\
-MCTS+RS                                     & 0.500              & 100                     & 0/10                          &           &          &          &            &              \\
-MCTS+HC                                     & 0.500              & 100                     & 7/10                          &           &          &          &            &              \\
-MCTS+SA                                     & 0.500              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
-MCTS+RS                                     & 0.250              & 100                     & 0/10                          &           &          &          &            &              \\
-MCTS+HC                                     & 0.250              & 100                     & 7/10                          &           &          &          &            &              \\
-MCTS+SA                                     & 0.250              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
-MCTS+RS                                     & 0.125              & 100                     & 0/10                          &           &          &          &            &              \\
-MCTS+HC                                     & 0.125              & 100                     & 7/10                          &           &          &          &            &              \\
-MCTS+SA                                     & 0.125              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
-MCTS+RS                                     & 0.000              & 100                     & 0/10                          &           &          &          &            &              \\
-MCTS+HC                                     & 0.000              & 100                     & 7/10                          &           &          &          &            &              \\
-MCTS+SA                                     & 0.000              & 100                     & 0/10                          &           &          &          &            &              \\ \hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
+\multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min       & avg      & std dev  & tot        & trace        \\ \hline
+URS                                         & - - -              & - - -                   & 0/10                          & 0.02080   & 0.06130  & 0.03130  &  408.585   &  4.086       \\ \hline
+MCTS+RS                                     & 0.500              &  90.0                   & 2/10                          & 0.00000   & 0.05430  & 0.04420  &  397.635   &  4.056       \\
+MCTS+HC                                     & 0.500              &  53.0                   & 7/10                          & 0.00000   & 0.00490  & 0.00840  & 1039.426   & 15.517       \\
+MCTS+SA                                     & 0.500              & - - -                   & 0/10                          & 0.00071   & 0.04930  & 0.04330  &  681.465   &  6.815       \\ \hline
+MCTS+RS                                     & 0.250              & - - -                   & 0/10                          & 0.00661   & 0.03571  & 0.02372  &  572.351   &  5.723       \\
+MCTS+HC                                     & 0.250              &  29.1                   & 9/10                          & 0.00000   & 0.00023  & 0.00073  &  914.175   & 26.076       \\
+MCTS+SA                                     & 0.250              &  46.0                   & 1/10                          & 0.00000   & 0.06933  & 0.09205  &  941.542   &  9.977       \\ \hline
+MCTS+RS                                     & 0.125              & - - -                   & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.125              & - - -                   & 0/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.125              & - - -                   & 0/10                          &           &          &          &            &              \\ \hline
+MCTS+RS                                     & 0.000              & - - -                   & 0/10                          &           &          &          &            &              \\
+MCTS+HC                                     & 0.000              & - - -                   & 0/10                          &           &          &          &            &              \\
+MCTS+SA                                     & 0.000              & - - -                   & 0/10                          &           &          &          &            &              \\ \hline
 \end{tabular}
-\caption{Result of experiments. Comparison between MCTS and URS, varying the parameter C which balance exploration and exploitation in the UCB formula. The input signals have been split into 2 and 3 region.}
+\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}
 \end{table}
 \pagebreak
 
