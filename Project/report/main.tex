@@ -162,7 +162,34 @@ The tables below [ref] show the obtained results varying the parameter C which b
     \item Time: statistics on elapsed time, both time are considered as average of the all number of experiments.
 \end{itemize}
 
+% TEST ON SPEC 1
+\begin{table}[ht]
+\centering
+\title{Experiments on specification \texttt{S1}}
+\begin{tabular}{|l|l|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
+\multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min       & avg      & std dev  & tot        & trace        \\ \hline
+URS                                         & - - -              &  40.0                   & 2/10                          & -4.079607 & 4.918815 & 5.514537 & 178.014774 &  2.010395    \\ \hline
+MCTS+RS                                     & 0.500              & - - -                   & 0/10                          &  5.302477 & 8.349208 & 2.400517 & 559.916313 &  5.599163    \\
+MCTS+HC                                     & 0.500              &  94.0                   & 1/10                          & -1.934010 & 5.079589 & 4.386757 & 1034.225333& 10.405390    \\
+MCTS+SA                                     & 0.500              &  24.0                   & 1/10                          & -0.683935 & 7.713107 & 4.152730 &  891.788040&  9.781046    \\ \hline
+%Done up to here
+MCTS+RS                                     & 0.250              & - - -                   & 0/10                          & 0.00661   & 0.03571  & 0.02372  &  572.351   &  5.723       \\
+MCTS+HC                                     & 0.250              &  29.1                   & 9/10                          & 0.00000   & 0.00023  & 0.00073  &  914.175   & 26.076       \\
+MCTS+SA                                     & 0.250              &  46.0                   & 1/10                          & 0.00000   & 0.06933  & 0.09205  &  941.542   &  9.977       \\ \hline
 
+MCTS+RS                                     & 0.125              &  42.7                   & 3/10                          & 0.000000 & 0.041011 & 0.035480  &  275.017   &  3.325       \\
+MCTS+HC                                     & 0.125              &  31.6                   & 8/10                          & 0.000000 & 0.003880 & 0.008430  &  497.749   & 11.466       \\
+MCTS+SA                                     & 0.125              &  76.3                   & 4/10                          & 0.000000 & 0.053490 & 0.110980  &  506.049   &  5.577       \\ \hline
+MCTS+RS                                     & 0.000              &  32.0                   & 1/10                          & 0.000000 & 0.147568 & 0.168171  &  473.518   &  5.113       \\
+MCTS+HC                                     & 0.000              &  36.6                   & 5/10                          & 0.000000 & 0.011482 & 0.016817  & 1322.240   & 19.317       \\
+MCTS+SA                                     & 0.000              & - - -                   & 0/10                          & 0.008342 & 0.163044 & 0.147144  &  873.488   &  8.734       \\ \hline
+\end{tabular}
+\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}
+\end{table}
+
+% TEST ON SPEC 2
 \begin{table}[ht]
 \centering
 \title{Experiments on specification \texttt{S2}}

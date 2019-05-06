@@ -1,0 +1,12 @@
+*********** RESULTS MCTS_SA_1_2_3_0250000 ***********
+[Info] Simulation time:			568.979043 seconds
+[Info] Approx. time x trace:	7.294603 seconds
+[Info] Simulated trace:			78
+[Info] Best Robustness:			-6.299626
+[Info] Best Trace:
+[100 286.95652173913]
+[98.989898989899 263.04347826087]
+[100 73.9130434782609]
+[98.989898989899 92.3913043478261]
+[100 128.260869565217]
+[84.8484848484848 100]
