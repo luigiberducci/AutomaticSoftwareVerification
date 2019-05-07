@@ -100,10 +100,10 @@ Again, classical search algorithm, basically an HC enriched with a notion of tem
 The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC.
 \pagebreak
 
-\section{Experimental phase}
+\section{Experimental phase}~\label{sec:exp}
 focus on experimental details, which model, which specification, which algorithms adopted.
 
-\subsection{Model and Specifications}
+\subsection{Model and Specifications}~\label{sec:exp:spec}
 The benchmark adopted is the Automatic Transmission by MathWorks, provided in Simulink. It models a vehicle equipped with a trasmission controller and allows the user to change two input signals: the     throttle and the brake.
 
 There are several specifications defined on this model because it is a common benchmark in verification papers. Starting from the reference paper and \cite{bardh2014benchmarks}, we selected two           specification:
@@ -193,7 +193,7 @@ MCTS+RS                                     & 0.000              &  64.5        
 MCTS+HC                                     & 0.000              &  41.0                   & 4/10                          & -2.64884  & 1.95654  & 3.712926 &  430.037 &  5.589    \\
 MCTS+SA                                     & 0.000              &  78.0                   & 2/10                          & -1.51834  & 4.81908  & 6.613282 &  558.383 &  5.834    \\ \hline
 \end{tabular}
-\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}
+\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}~\label{table:res:s1}
 \end{table}
 
 % TEST ON SPEC 2
@@ -221,7 +221,7 @@ MCTS+RS                                     & 0.000              &  32.0        
 MCTS+HC                                     & 0.000              &  36.6                   & 5/10                          & 0.00000  & 0.01148  & 0.01682  & 1322.240   & 19.317       \\
 MCTS+SA                                     & 0.000              & - - -                   & 0/10                          & 0.00834  & 0.16304  & 0.14714  &  873.488   &  8.734       \\ \hline
 \end{tabular}
-\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}
+\caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}~\label{table:res:s2}
 \end{table}
 
 % TEST ON SPEC 2 comparing partitioning
@@ -241,23 +241,95 @@ MCTS+RS                                     & 2x2                &  70.0        
 MCTS+HC                                     & 2x2                &  48.7                   & 7/10                          & 0.00000  & 0.00099  & 0.00163  & 1479.660   & 22.530       \\
 MCTS+SA                                     & 2x2                & - - -                   & 0/10                          & 0.00561  & 0.05776  & 0.02567  & 1393.552   & 13.936       \\ \hline
 \end{tabular}
-\caption{Comparison of search algo with fixed C=0.5 and varying the input space partitioning. Test on spec \texttt{S2}.}
+\caption{Comparison of search algo with fixed C=0.5 and varying the input space partitioning. Test on spec \texttt{S2}.}~\label{table:patitioning}
 \end{table}
 
 \pagebreak
 
-\section{Analysis of the results}
-Oveerview of the different test, how many times and the difficutly overcomed (e.g., matlab poor randomness, o.o. poor peerformances and not correctness)
+\section{Analysis of the results}~\label{sec:resan}
+In the following the results of our experiments are presented along with a contextual analysis of what produced those results, how and why.
+In order to be able to evaluate the system, many problem was overcame. 
+Randomness in Matlab is not as one would expect thus we had to further tweak the environment to make the system work. Moreover the object orientation in poorly handled in Simulink vs Matlab interleaving causing scope problems and poor performances. To solve this we had to rewrite the all code base using scripts and mocking scopes using folders, structs and folders. 
+% In order to evauate the system proposed different test has been deviced and executed.
 
 \subsection{Comments}
-table with results and plot for robustnes and graph
+As anticipated in Section \ref{sec:exp:spec} two different specifications has been verified, or actually falsified, namely $S1$ and $S2$.
 
-\subsection{Hyperparameters}
-General choises of C, region and quantization vs brancing factor
+% \subsubsection{S1}
+\paragraph{S1} \textit{The engine speed never reaches 120}. Clearly the robustness function resulting by $S1$ is monotone, directly proportional to break and inversely proportional to throttle.
+Direct consequence of this statement is that minimizing the robustness should be quite easy already with a greedy approach since the search is supposed to be straightforward.
 
-link to saved workspaces
+In accord with this intuition, as can be seen from Table~\ref{table:res:s1}, the best performing experiments are those with a reasonably small value for $C=0.125$. 
+Recall that a small $C$ means give a bias towards exploitation, this exploitation factor here is the one matching the best the monotonic nature of the robustness: exploiting promising regions gives back promising results.
+
+Another evidence of this structure is the behavior of HC search. Again as can be observed form Table~\ref{table:res:s1}, the overhead of using Hill-Climbing is almost not relevant. This is caused by the fact that the search goes almost straight following the steepest descent of the robustness curve and HC, which by definition does exactly this, finds not pejorative neighbours very quickly. 
+
+Conversely, investing on exploration (\textit{e.g.} $C=0.5$), results in very poor falsification performances since most of the budget is wasted in exploring the huge state space instead of going straight toward minimum. Also the overhead of HC and SA is quite relevant (a net 2x factor).
+
+\paragraph{S2} \textit{If the vehicle gear is 3 then the speed is always greater than 20}.
+As already pointed our in Section~\ref{sec:exp:spec}, this specification is not trivial at all, thus a clever strategy is needed in order to do any falsification.
+Proof of this is the fact that, as can be observed from Table~\ref{table:res:s2}, Uniform Random Sampling is never able to falsify such requirement.
+
+The best performing strategy here is again HC, which is able to falsify $S2$ specification $9$ times out of $10$ with $C=0.25$.
+
+Note that:
+\begin{itemize}
+    \item The $C$ hyper-parameter balances two factors, exploitation and exploitation.
+    \item The exploration factor is not normalized, typically is $\in [0,2.5]$.
+    \item The exploitation is normalized $\in [0,1]$.
+\end{itemize}
+Their ratio is in the order of $2.5$. Using $C=0.25$ projects that ratio into a more reasonable yet performing $0.6$ factor.
+
+Furthermore, even is the performances for HC are quite good even for the non trivial specification, this comes at a cost. The \textit{Time} column of Table~\ref{table:res:s2} show that the time needed to run HC to generate a single trace is $26.076$ against the $5.723$ needed with the RS and the $9.977$ for SA.
+
+\paragraph{Execution Times}
+To conclude the analysis, a fast consideration over execution time is worth to be made.
+In the test in which falsification is reached the number of simulated trace is surprisingly small. This is a consequence of the fact that, if the top level starts going in the good direction, the all process is quite fast.
+Having a cluster of multiple machines would have allowed to test multiple configuration of the same experiment and exploiting \textit{a posteriori} those expanding the right tree while pruning those wasting time on not relevant regions. 
+As can be observed again from Table~\ref{table:res:s2} the overhead of MCTS layer is minimal. Observing the wall time for URS and MCTS using RS the difference is not statistically relevant thus the upper layer is almost performed at no cost. 
+
+Unfortunately, this is only true when using random sampling as search algorithm. Using any other search strategy will end up in an overhead. 
+This is caused by the fact that the space of the search for each rollout call of MCTS is again exponential. This combines with the MCTS expansion adding another degree of freedom thus another large space to search on. 
+
+
+\paragraph{State Space Partitioning}
+Table~\ref{table:patitioning} show another direction of tests we investigated on. In such tests, the state space is partitioned differently, both the throttle and the brake was divided in two regions (instead of 2 and 3 used in the previous experiments).
+This may sound as a pointless modification but, in fact opens up the scenario described till now to a whole new perspective.
+This new partitioning induces a MCTS tree with a smaller branching factor ($4$ vs $8$ in the previous experiments). Direct consequence is that:
+\begin{itemize}
+    \item The MCTS effort is moved to a higher view of the system in which regions are wider.
+    \item Wider regions means being able to explore more efficiently the space using a bigger tessellation.
+    \item The underlining search algorithm can then work with a finer grain with a more solid region prefix.
+\end{itemize}
+Overall this produces a slight improvement suggesting that a better hyper-parameter search may give a relevant boost in performances (see Section~\ref{sec:hp}).
+
+
+
+%TODO: add plot of robustness function vs trace found (quello che abbiamo mostrato al proff)
+%TODO: table with results and plot for robustnes and graph
+
+\subsection{Hyperparameters}~\label{sec:hp}
+Section~\ref{sec:resan} strongly remark the role of some hyper-parameters and the importance of a proper tuning of those.
+Having the computational power to do so, a proper grid search in the space of hyper-parameter should be performed to fine-tune the system and fully exploit its potentiality.
+The hyper-parameters that should be investigated are the following:
+\begin{itemize}
+    \item C, to balance exploration and exploitation and to better combine MCTS with a given search strategy.
+    \item Region Partitioning, to control MCTS branching factor.
+    \item Disturbance Quantization: to control state space explosion.
+    \item Control Points, to define the degree of freedom of the simulation itself.
+\end{itemize}
+Clearly a full search is prohibitive thus a clever approach should be devised in order to performs hyper-parameters optimization.
 
 \section{Conclusion}
+To conclude the work presented, we decided to briefly propose some future develops that may enchant the system implemented.
+\begin{itemize}
+    \item A learning model can be used to learn $C$ and adjust it at run time adaptively in a reinforcement learning fashion. 
+    \item A non agnostic version of the system can be produced by using the specification to falsify to infer an ordering over MCTS nodes to bias toward know-to-be-good regions.
+    \item An adaptive UCB normalization over the exploration parameter can be made at a given point in the simulation by catching the max value found up till that moment and using such value as a scaling factor for the original exploration factor.
+\end{itemize}
+
+The system presented, which eventually obtains good performances, could largely benefits form all this tree new directions.
+
 
 \bibliographystyle{plain}
 \bibliography{biblio}
