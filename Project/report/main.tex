@@ -217,6 +217,27 @@ MCTS+SA                                     & 0.000              & - - -        
 \end{tabular}
 \caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}
 \end{table}
+
+% TEST ON SPEC 2 comparing partitioning
+\begin{table}[ht]
+\centering
+\title{Experiments on different partitioning}
+\begin{tabular}{|l|l|c|c|c|c|c|c|c|}
+\hline
+\multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{Part} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
+\multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min      & avg      & std dev  & tot        & trace        \\ \hline
+URS                                         & - - -              & - - -                   & 0/10                          & 0.02080  & 0.06130  & 0.03130  &  408.585   &  4.086       \\ \hline
+MCTS+RS                                     & 2x3                &  90.0                   & 2/10                          & 0.00000  & 0.05430  & 0.04420  &  397.635   &  4.056       \\
+MCTS+HC                                     & 2x3                &  53.0                   & 7/10                          & 0.00000  & 0.00490  & 0.00840  & 1039.426   & 15.517       \\
+MCTS+SA                                     & 2x3                & - - -                   & 0/10                          & 0.00071  & 0.04930  & 0.04330  &  681.465   &  6.815       \\ \hline
+
+MCTS+RS                                     & 2x2                &  70.0                   & 3/10                          & 0.00000  & - - - -  & - - - -  & - - - -    & - - - -       \\
+MCTS+HC                                     & 2x2                &  48.7                   & 7/10                          & 0.00000  & - - - -  & - - - -  & - - - -    & - - - -       \\
+MCTS+SA                                     & 2x2                & - - -                   & 0/10                          & 0.00561  & - - - -  & - - - -  & - - - -    & - - - -       \\ \hline
+\end{tabular}
+\caption{Comparison of search algo with fixed C=0.5 and varying the input space partitioning. Test on spec \texttt{S2}.}
+\end{table}
+
 \pagebreak
 
 \section{Analysis of the results}

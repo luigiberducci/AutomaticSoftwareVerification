@@ -42,7 +42,7 @@ IN = inputDefinition();
 
 %% MCTS
 MCTS.BUDGET = 100;
-MCTS.C = 0.25;
+MCTS.C = 0.5;
 noo.MCTS.init_mcts;
 
 %% Search (SH) Algorithm

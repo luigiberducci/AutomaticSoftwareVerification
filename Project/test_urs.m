@@ -7,7 +7,7 @@ for test = 1:TEST.NUMTEST
     %% Initialization
     t0 = tic;
     init_param;     %Simulation parameters and other config
-    SPEC = 2;
+    SPEC = 1;
     inner_prefix = sprintf("URS_%d", SPEC);
     out_dir = "test/" + inner_prefix;
     t_init = toc(t0);
