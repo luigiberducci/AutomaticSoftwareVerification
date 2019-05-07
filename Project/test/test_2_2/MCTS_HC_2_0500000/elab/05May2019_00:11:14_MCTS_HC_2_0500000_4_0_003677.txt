@@ -1,0 +1,12 @@
+*********** RESULTS MCTS_HC_2_0500000 ***********
+[Info] Simulation time:			1809.412206 seconds
+[Info] Approx. time x trace:	18.094122 seconds
+[Info] Simulated trace:			100
+[Info] Best Robustness:			0.003677
+[Info] Best Trace:
+[34.3434343434343 97.8260869565217]
+[0 75]
+[0 220.652173913043]
+[61.6161616161616 183.695652173913]
+[96.969696969697 307.608695652174]
+[2.02020202020202 148.913043478261]

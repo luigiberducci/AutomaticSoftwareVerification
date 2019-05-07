@@ -1,21 +1,21 @@
 #!/bin/bash
 
 algo="RS HC SA"
-CC="0500000 0250000 0125000 0000000"
-dir_pre="MCTS_"
-dir_post="_1_2_3_"
+CC="0500000"
+dir_pre="test_2_2/MCTS_"
+dir_post="_2_"
 sub="elab"
 
 # Create `elab` dirs and copy txt files into them
-for C in $CC
-do
-    for a in $algo
-    do
-        dir=${dir_pre}${a}${dir_post}${C}
-        mkdir ${dir}/${sub}
-        cp ${dir}/*txt ${dir}/${sub}
-    done
-done
+# for C in $CC
+# do
+#     for a in $algo
+#     do
+#         dir=${dir_pre}${a}${dir_post}${C}
+#         mkdir ${dir}/${sub}
+        # cp ${dir}/*txt ${dir}/${sub}
+    # done
+# done
 # Collect robustness
 out_file="BestRob.dat"
 for C in $CC
