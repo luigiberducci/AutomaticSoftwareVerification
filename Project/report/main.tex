@@ -3,6 +3,7 @@
 \usepackage{sectsty}
 \usepackage{graphicx}
 \usepackage{multirow}
+\usepackage{float}
 \usepackage{abstract}
 
 \renewcommand{\contentsname}{\centering Contents}   
@@ -17,7 +18,7 @@
 \textheight=9.0in
 \headsep=0.25in
 
-\title{Monte Carlo Tree Search driven Falsification}
+\title{Temporal Logic Falsification via Monte Carlo Tree Search}
 \author{Lugi Berducci \and Alessandro Steri}
 \date{\today}
 
@@ -180,7 +181,9 @@ The tables below show the obtained results varying the parameter C which balance
     \item Time: statistics on elapsed time, both time are considered as average of the all number of experiments.
 \end{itemize}
 
-Finally, the results varying the input space partitioning are reported in the Table~\ref{table:patitioning} in order to emphasize the influence of hyperparameter tuning.
+Furthermore, the results varying the input space partitioning are reported in the Table~\ref{table:patitioning} in order to emphasize the influence of hyperparameter tuning.
+
+In order to highlights the different approach of search algorithms adopted, the Figure~\ref{img:rob_monitoring} shows the Robustness over the experiments of a sample of 5 experiments. For each search algorithm MCTS+RS, MCTS+HC, MCTS+SA, the Figure represent what has been the Robustness obtained and the current best Robustness. Moreover, the Figure shows in the first half the experiments with $C=0.0$ and in the second half the experiments with $C=0.125$. In this way, it also highlights the impact of MCTS exploration/exploitation factor on the search algorithm underlying.
 
 % TEST ON SPEC 1
 \begin{table}[ht]
@@ -298,6 +301,25 @@ The ratio among the two factors is in the order of $2.5$. Then, using $C=0.25$, 
 
 Finally, in the experiments which falsify the specification, the number of simulated trace is surprisingly small, as reported by the column \textit{Avg Trace Falsification}. This is due the effectiveness of the search algorithm and highlights their performance.
 
+\paragraph{Impact of search algorithms.}
+The previous comments consider the obtained result in a monolithic way, without any consideration of the two-layers search. Considering the details about the Robustness distribution varying the search algorithm allows to understand what is the impact of each search algorithm in the lower level. For this reason, we reported a sample of 5 tests in the Figure~\ref{img:rob_monitoring} varying the search algorithm and presenting the result with $C=0.0$ (worst performance) and $C=0.125$ (best performance).
+
+First of all, in both the experiments, we can observe a different behaviour between MCTS+HC and MCTS+RS, MCTS+SA. Whilst MCTS+HC remains bounded locally with respect to the Robustness value, the other search algorithms present high peaks. These wide oscillations correspond with a less effective search that has been confirmed by the results.
+
+Considering the experiments with $C=0.0$, all the algorithms seem to explore their best regions without any exploration and for this reason, they rarely reach the falsification. Even the MCTS+HC continue to search locally without success (3 times over 5). However, when MCTS+HC luckily choose the right down-hill, it go straight and reach falsification (2 times over 5).
+
+Conversely, considering the best tuning with $C=0.125$, all the algorithms perform better than the previous experiments. The peculiar behaviour of each algorithm is confirmed. In fact, we can easily recognize the shape of the MCTS+HC compared with the others.
+
+\begin{figure}[H]~\label{img:rob_monitoring}
+    \centering
+    \textbf{Robustness Monitoring - Test with C=0.0}\par
+    \includegraphics[width=\linewidth]{img/0_000/compare_search_rob_blue.jpg}
+
+    \textbf{Robustness Monitoring - Test with C=0.125}\par
+    \includegraphics[width=\linewidth]{img/0_125/compare_search_rob_blue_orange.jpg}
+    \caption{Comparison of robustness monitoring using different search algorithm: MCTS+RS (first line), MCTS+HC (second line), MCTS+SA (third line). Robustness distribution over 100 simulation, picking 5 sample test of falsification on specification \texttt{S2}.}
+\end{figure}
+
 \paragraph{Execution Times}
 In conclusion, a brief consideration of the execution time is worth to be made.
 However, even if the performances for Hill Climbing are quite good even for this non-trivial specification, they come with a higher cost. The \textit{Time} column of Table~\ref{table:res:s2} highlights that the time needed to simulated a single trace with MCTS+HC is $26.076$ seconds, compared with $5.723$ seconds needed for MCTS+RS and $9.977$ seconds for MCTS+SA.
@@ -335,15 +357,21 @@ The hyper-parameters that should be investigated are the following:
 Clearly a full search is prohibitive thus a clever approach should be devised in order to performs hyper-parameters optimization.
 
 \section{Conclusion}
-To conclude the work presented, we decided to briefly propose some future develops that may enchant the system implemented.
-\begin{itemize}
-    \item A learning model can be used to learn $C$ and adjust it at run time adaptively in a reinforcement learning fashion. 
-    \item A non agnostic version of the system can be produced by using the specification to falsify to infer an ordering over MCTS nodes to bias toward know-to-be-good regions.
-    \item An adaptive UCB normalization over the exploration parameter can be made at a given point in the simulation by catching the max value found up till that moment and using such value as a scaling factor for the original exploration factor.
-    \item A parallel version of MCTS. Since the expansion phase at a given layer will expand all node with a 0 score and up till exist a 0 score node a node with such score is selected, it is possible to exploit embarrassing parallelism with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, one layer can be attacked at once to reduce the exploration cost and invest in exploration. 
-\end{itemize}
+In this project, we had the chance to explore a new trend in falsification which consists of the application of a sophisticated combination of search algorithms in falsification of Temporal Logic specifications. The proposed MCTS algorithm performs well, even in more challenging scenario as the Specification \texttt{S2}, but it shown that it requires a high number of simulation to compute the search tree because the building is based on exploration of each branch. As a consequence, the application of MCTS on simple specifications (\textit{i.e. easy to find an event trace which falsify the specification}) doesn't result effective.
 
-The system presented, which eventually obtains good performances, could largely benefits form all this tree new directions.
+In conclusion, we would like to propose a few developments of the presented work:
+\begin{enumerate}
+    \item Since the tuning of parameter $C$ seems to be determinant, an extension of the algorithm could be its adaptive version which change the value of $C$ according to the obtained results. The design of a learning model could be explored with a reinforcement learning approach. 
+    \item The proposed approach doesn't take into account any domain knowledge that could be exploited on a specific model. In fact, we could customize:
+        \begin{enumerate}
+            \item the ordering of node explored in the Expansion phase. We could infer an ordering to bias toward know-to-be-good regions.
+            \item the branching factor at different levels of tree because the height of the tree corresponds to the time advancement. We could adopt a low branching factor in less significant period of time and a wide branching factor on more interesting time periods.
+        \end{enumerate}
+    \item The adopted UCB formula seems to be a bias towards exploration because the two terms are not normalized properly. In fact, the first term is normalized in [0,1] whilst the second term is not and change in [0,3]. We could rafine this formula normalizing the second term with respect to the max value, improving the performance.
+    \item The tree structure of MCTS seems to be adapt to a parallel execution. In particular, the expansion phase at a given layer will expand all node with a 0 score and up till exist a 0 score node a node with such score is selected, it is possible to exploit embarrassing parallelism with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, one layer can be attacked at once to reduce the exploration cost and invest in exploration. 
+\end{enumerate}
+
+The system presented, which eventually obtains good performances, could largely benefits from all these new directions.
 
 
 \bibliographystyle{plain}

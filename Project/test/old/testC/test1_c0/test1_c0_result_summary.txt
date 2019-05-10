@@ -1,0 +1,9 @@
+*********** RESULTS MCTS - Test C=0 ***********
+[Info] Simulation time:			696.821154 seconds
+[Info] Approx. time x trace:	1.814638 seconds
+[Info] Simulated trace:			384
+[Info] Best Robustness:			-3.110857
+[Info] Best Trace:
+  100.0000  222.8261
+  100.0000  163.0435
+  100.0000  163.0435
