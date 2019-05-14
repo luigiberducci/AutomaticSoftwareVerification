@@ -101,50 +101,25 @@ To overcome both the problems, along the line of \cite{zhang2018two}, we used UC
 % \pagebreak
 
 
-\begin{figure}[H]
-\begin{subfigure}{\textwidth}
-  \centering
-  % \includegraphics[width=0.4\linewidth]{img/c0.jpg}
-  \includegraphics[width=\linewidth]{img/c00wide.jpg}
-  \caption{Favour exploitation ($C=0$).}
-  \label{fig:c0}
-\end{subfigure}\\
-\begin{subfigure}{\textwidth}
-  \centering
-  % \includegraphics[width=0.4\linewidth]{img/c05.jpg}
-  \includegraphics[width=\linewidth]{img/c05wide.jpg}
-  \caption{Balanced ($C=0.5$).}
-  \label{fig:c05}
-\end{subfigure}\\
-\begin{subfigure}{\textwidth}
-  \centering
-  % \includegraphics[width=0.4\linewidth]{img/c1.jpg}
-  \includegraphics[width=\linewidth]{img/c10wide.jpg}
-  \caption{Favour exploration ($C=1$).}
-  \label{fig:c1}
-\end{subfigure}
-\caption{Different MCTS tree varying parameter $C$.}
-\label{fig:C}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%% MAYBE THIS IS BETTER?
-% \begin{figure}
-% \begin{subfigure}{.3\textwidth}
+% \begin{figure}[H]
+% \begin{subfigure}{\textwidth}
 %   \centering
-%   \includegraphics[width=.8\linewidth]{img/c0.jpg}
+%   % \includegraphics[width=0.4\linewidth]{img/c0.jpg}
+%   \includegraphics[width=\linewidth]{img/c00wide.jpg}
 %   \caption{Favour exploitation ($C=0$).}
 %   \label{fig:c0}
-% \end{subfigure}%
-% \begin{subfigure}{.3\textwidth}
+% \end{subfigure}\\
+% \begin{subfigure}{\textwidth}
 %   \centering
-%   \includegraphics[width=.8\linewidth]{img/c05.jpg}
+%   % \includegraphics[width=0.4\linewidth]{img/c05.jpg}
+%   \includegraphics[width=\linewidth]{img/c05wide.jpg}
 %   \caption{Balanced ($C=0.5$).}
 %   \label{fig:c05}
-% \end{subfigure}%
-% \begin{subfigure}{.3\textwidth}
+% \end{subfigure}\\
+% \begin{subfigure}{\textwidth}
 %   \centering
-%   \includegraphics[width=.8\linewidth]{img/c1.jpg}
+%   % \includegraphics[width=0.4\linewidth]{img/c1.jpg}
+%   \includegraphics[width=\linewidth]{img/c10wide.jpg}
 %   \caption{Favour exploration ($C=1$).}
 %   \label{fig:c1}
 % \end{subfigure}
@@ -152,6 +127,30 @@ To overcome both the problems, along the line of \cite{zhang2018two}, we used UC
 % \label{fig:C}
 % \end{figure}
 %%%%%%%%%%%%%%%% MAYBE THIS IS BETTER?^^
+
+
+\begin{figure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/c0.jpg}
+  \caption{Favour exploitation ($C=0$).}
+  \label{fig:c0}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/c05.jpg}
+  \caption{Balanced ($C=0.5$).}
+  \label{fig:c05}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{img/c1.jpg}
+  \caption{Favour exploration ($C=1$).}
+  \label{fig:c1}
+\end{subfigure}
+\caption{Different MCTS tree varying parameter $C$.}
+\label{fig:C}
+\end{figure}
 
 \subsection{Lower-layer: Search Algorithms}~\label{sec:srcalg}
 In the very end, the falsification task boils down to a search in the space of the states. 
