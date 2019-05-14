@@ -1,10 +1,14 @@
 \documentclass[11pt]{article}
 
 \usepackage{sectsty}
-\usepackage{graphicx}
+% \usepackage{graphicx}
 \usepackage{multirow}
-\usepackage{float}
 \usepackage{abstract}
+\usepackage[final]{graphicx}
+\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{float}
+
 
 \renewcommand{\contentsname}{\centering Contents}   
 \renewcommand{\abstractnamefont}{\normalfont\normalsize\bfseries\Large}
@@ -18,6 +22,7 @@
 \textheight=9.0in
 \headsep=0.25in
 
+% \title{Monte Carlo Tree Search driven Falsification}
 \title{Temporal Logic Falsification via Monte Carlo Tree Search}
 \author{Lugi Berducci \and Alessandro Steri}
 \date{\today}
@@ -46,23 +51,29 @@ In this project, we focused on falsification of Temporal Logic Specification usi
 \subsection{Introduction}
 The process of falsification aims to find a counter example to a given specification, such example typically are \textit{hard to find}  errors. In general the search space is huge and the process of verification through simulation is quite expensive, thus a clever strategy to drive the search and properly invest the simulation time is essential.
 
-Following the work done in \cite{zhang2018two} we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search in which, at each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region an estimation on how promising they are (see Section~\ref{sec:MCTS}). 
-On the bottom a generic search algorithm (see Section~\ref{sec:srcalg}) further investigate promising regions at an finer grain coming from the top layer and updates their value of "goodness". % (maybe confidence??).
+Following the work done in \cite{zhang2018two} we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search. At each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region a score mesuring how promising they are (see Section~\ref{sec:MCTS}). 
+On the bottom a search algorithm (see Section~\ref{sec:srcalg}) further investigate, at a finer grain, promising regions  coming from the top layer and updates score.
 
-The MCTS is often used in automated game play (see alphago). This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to find it. 
+The MCTS is often used in automated game play. This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to find it. 
 
 The MCTS allow to fine tune the balance between exploration and exploitation at a macroscopic level while the choice of the second layer acts in the same way but atomically over points in the search space.
 
 \subsection{Upper-layer: MCTS}~\label{sec:MCTS}
-The MCTS aims to iteratively build a tree $T=(V,E)$ where nodes  $v \in V$ are labelled with a score $v.s$ and a counter $v.n$ and edges in $E$ are labelled with actions. At the start the tree is initialized as a root node with $root.s=Inf$ and $root.n=0$.
-The execution evolves in different phases.
+The MCTS aims to iteratively build a tree $T=(V,E)$ where nodes  $v \in V$ are labelled with a score $v.s$ and a counter $v.n$ and edges in $E$ are labelled with actions. At the begin, the tree is initialized as a root node with $root.s=Inf$ and $root.n=0$.
+The execution evolves in different phases (see Figure~(\ref{fig:mcts})).
+
+\begin{figure}[H]
+  \includegraphics[width=\linewidth]{img/mcts2.png}
+  \caption{Graphical overview of MCTS phases and theirs behaviors.}
+  \label{fig:mcts}
+\end{figure}
 
 \paragraph{Selection:} Starting from the root until reaching a leaf (of the MCTS tree) we move to the node $v$ maximizing UCB($v$) (see \textbf{UBC} below). 
 The leaf, say $l$ will be sampled. If $l$ is sampled for the first time then Rollout($l$), else Expansion($l$).
 
-\paragraph{Expansion:} For each action $a$ available from $l$ we extend $T$ with a new node $v $  with $v.s=Inf$, $v.n=0$ and edge label $a$. Then a random child of $l,$ say $c_l,$ is chosen to do Rollout($c_l$).
+\paragraph{Expansion:} For each action $a$ available from $l$ we extend $T$ with a new node $v $ having $v.s=Inf$, $v.n=0$ and edge label $a$. Then a random child of $l,$ say $c_l,$ is chosen to do Rollout($c_l$).
 
-\paragraph{Rollout(l)} For each ancestor of $l$ starting from the root till $l$ itself, the search algorithm (see section) is run in the region of the selected node. Then starting from $l$, the rest of the trace is simulated driven by the search. At the end the trace will have a robustness value of $s$ which will be used as an estimate for $l$ and its ancestors by means of Backpropagation($l,s$).
+\paragraph{Rollout(l)} For each ancestor node of $l$ starting from the root till $l$ itself, the lower layer (see Section~\ref{sec:srcalg}) searches in the region of the selected node (tree policy). Then starting from $l$, the  trace simulation is driven by the search (default policy) up till horizon. At the end, the trace will have a robustness value of $s$ which will be used as an estimate for $l$ and its ancestors by means of Backpropagation($l,s$).
 
 \paragraph{Backpropagation(l,s):} From $l$ till the root, going trough $l$'s ancestors say $l=a_1, a_2, \dots, a_n=root$ , generic $a_i$ is updated as follow:
 \begin{itemize}
@@ -75,7 +86,8 @@ The leaf, say $l$ will be sampled. If $l$ is sampled for the first time then Rol
 \begin{equation}
     UCB = v.s + C \cdot \sqrt{\frac{\ln N}{v.n}}
 \end{equation}
-and $N = root.n$ hence the total number of visited nodes. The idea behind the parameter $C$ is to fine-tune exploration vs exploitation. 
+where $N = root.n$ hence the total number of visited nodes. The idea behind the parameter $C$ (see Figure~\ref{fig:C}) is to fine-tune exploration (see \ref{fig:c1}) vs exploitation (see \ref{fig:c0}). 
+
 When considering the falsification problem thus using robustness as heuristic we face two problem:
 \begin{itemize}
     \item Robustness can have positive yet negative values while classical UCB is designed to work with only positive value. 
@@ -89,6 +101,58 @@ To overcome both the problems, along the line of \cite{zhang2018two}, we used UC
 % \pagebreak
 
 
+\begin{figure}[H]
+\begin{subfigure}{\textwidth}
+  \centering
+  % \includegraphics[width=0.4\linewidth]{img/c0.jpg}
+  \includegraphics[width=\linewidth]{img/c00wide.jpg}
+  \caption{Favour exploitation ($C=0$).}
+  \label{fig:c0}
+\end{subfigure}\\
+\begin{subfigure}{\textwidth}
+  \centering
+  % \includegraphics[width=0.4\linewidth]{img/c05.jpg}
+  \includegraphics[width=\linewidth]{img/c05wide.jpg}
+  \caption{Balanced ($C=0.5$).}
+  \label{fig:c05}
+\end{subfigure}\\
+\begin{subfigure}{\textwidth}
+  \centering
+  % \includegraphics[width=0.4\linewidth]{img/c1.jpg}
+  \includegraphics[width=\linewidth]{img/c10wide.jpg}
+  \caption{Favour exploration ($C=1$).}
+  \label{fig:c1}
+\end{subfigure}
+\caption{Different MCTS tree varying parameter $C$.}
+\label{fig:C}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%% MAYBE THIS IS BETTER?
+% \begin{figure}
+% \begin{subfigure}{.3\textwidth}
+%   \centering
+%   \includegraphics[width=.8\linewidth]{img/c0.jpg}
+%   \caption{Favour exploitation ($C=0$).}
+%   \label{fig:c0}
+% \end{subfigure}%
+% \begin{subfigure}{.3\textwidth}
+%   \centering
+%   \includegraphics[width=.8\linewidth]{img/c05.jpg}
+%   \caption{Balanced ($C=0.5$).}
+%   \label{fig:c05}
+% \end{subfigure}%
+% \begin{subfigure}{.3\textwidth}
+%   \centering
+%   \includegraphics[width=.8\linewidth]{img/c1.jpg}
+%   \caption{Favour exploration ($C=1$).}
+%   \label{fig:c1}
+% \end{subfigure}
+% \caption{Different MCTS tree varying parameter $C$.}
+% \label{fig:C}
+% \end{figure}
+%%%%%%%%%%%%%%%% MAYBE THIS IS BETTER?^^
+
 \subsection{Lower-layer: Search Algorithms}~\label{sec:srcalg}
 In the very end, the falsification task boils down to a search in the space of the states. 
 We aim to find a falsifying trace of $k$ disturbances, where $k$ is the number of desired control points. 
@@ -99,18 +163,22 @@ One of the following search algorithm is then used to produce a trace $\delta$ a
 \subsubsection{Random Search: MCTS Left Alone}
 To have a way to evaluate the contribution purely given by the MCTS layer, we decided to implement a fast yet dumb search strategy.
 Given a meta-trace $\hat{\delta}$, for each control point $k$ in $\hat{\delta}$, RS basically samples u.a.r. a disturbance from the appropriate region for such control point.
-This result in a very fast yet only exploring algorithm. 
+This result in a very fast yet only exploring algorithm (see Section~\ref{sec:exp} for comparison). 
 
 \subsubsection{Hill Climbing: the Greedy}
 Here, the classical Hill Climbing implementation has been used. The only difference is that, since eventually we need a full trace (a trace having a disturbance for each control point), in the case a not worst neighbour isn't found at a given depth of the search, a random one is selected. 
+
 Also, to have a stronger falsification power, at the cost of a longer simulation time restart has been implemented. 
+
 On the other hand to speed up the simulation, at the cost of a weaker falsification power it is possible to bound the number of
 neighbour tested by the algorithm at each step. 
-Clearly this search strategy is way clever and effective than RS but the simulation time needed to carry on the falsification process whit a non trivial property to falsify is of another order of magnitude.
+Clearly this search strategy is way clever and effective than RS. Conversely, the simulation time needed to carry on the falsification process with a non trivial property to falsify is of another order of magnitude (see Section~\ref{sec:exp} for comparison).
 
 \subsubsection{Simulated Annealing: the Impatient}
 Again, classical search algorithm, basically an HC enriched with a notion of temperature or, as it is in this case, the MCTS budget (hence number of expanded nodes). The higher the temperature the hardest is to make a pejorative move. 
-The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC.
+The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC (see Section~\ref{sec:exp} for comparison).
+
+
 \pagebreak
 
 \section{Experimental phase}~\label{sec:exp}
@@ -128,7 +196,7 @@ There are several specifications defined on this model because it is a common be
 
 We selected these two specifications because they are representative of different kind of search. The first one is easier to falsify, compared with the second one.
 
-\subsection{Implementation of Robustness metric}
+\subsection{Implementation of Robustness Metric}
 In order to undestand the difficulty of falsification of the second specification, we need to spend a few words on the computation of robustness metric used to drive the search.
 
 According to the definition of Robustness given in\cite{fainekos2006robustness}, this metric gives us a measure of how the state of the model is far from the falsification. In the first specification,    the computation of Robustness is simply the difference between the reference speed and the current speed. Conversely, in the second specification the computation is more complex and can be summarized by  the following steps:
@@ -160,7 +228,7 @@ In contrast with the original definition of the Robustness, we proposed to norma
 
 \pagebreak
 
-\subsection{Experiments}
+\subsection{Experiments}~\label{sec:exp}
 In order to evaluate the effectiveness of the proposed falsification framework, we executed a bunch of experiments on the Automatic Transmission model considering several search algorithms: Uniform Random Sampling (URS), MCTS with Random Search (MCTS+RS), MCTS with Hill Climbing (MCTS+HC), MCTS with Simulated Annealing (MCTS+SA).
 
 Since the execution of experiments is based on randomness, we repeated the same experiment 10 times to ensure more confident results.
