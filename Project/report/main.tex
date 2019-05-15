@@ -6,7 +6,7 @@
 \usepackage{abstract}
 \usepackage[final]{graphicx}
 \usepackage{subcaption}
-\usepackage{subfig}
+% \usepackage{subfig}
 \usepackage{float}
 
 
@@ -34,9 +34,9 @@
 %--Paper--
 \begin{abstract}
 Simulation-based verification is often the only chance to verify complex hybrid systems and it requires a large amount of time and resources.
-In particular, the process to find anomalies and faults is called \textit{falsification} because it consists of finding a scenario (a trace of disturbances) that lead the system to falsify the requirements, described as formal specifications.
+In particular, the process to find anomalies and faults is called \textit{falsification} because it consists of finding a scenario (a trace of disturbances) that leads the system to violate the requirements, described as formal specifications.
 
-Many research groups are focusing their effort on techniques for reduction of verification time and recent works adopted search algorithm driven by a heuristic called \textit{robustness}.
+Many research groups are focusing their effort on techniques for reduction of verification time and recent works adopted search algorithms driven by a heuristic called \textit{robustness}.
 
 In this project, we focused on falsification of Temporal Logic Specification using one of the most promising search algorithm: the Monte Carlo Tree Search, famous for being adopted in AlphaGo. Specifically, we tested this approach on the well-known Automatic Transmission model and analysed the obtained result, describing strenghts and difficulties of MCTS algorithm.
 
@@ -49,18 +49,18 @@ In this project, we focused on falsification of Temporal Logic Specification usi
 
 \section{Two-Layered Falsification}
 \subsection{Introduction}
-The process of falsification aims to find a counter example to a given specification, such example typically are \textit{hard to find}  errors. In general the search space is huge and the process of verification through simulation is quite expensive, thus a clever strategy to drive the search and properly invest the simulation time is essential.
+The process of falsification aims to find a counter example to a given specification, such examples typically are \textit{hard to find} errors. In general, the search space is too wide and the process of verification through simulation is expensive, thus a clever strategy to drive the search and properly invest the simulation time is crucial.
 
-Following the work done in \cite{zhang2018two} we decided to use a two layer strategy. On the top level Monte Carlo Tree Search act as a zoomed out view of the search. At each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region a score mesuring how promising they are (see Section~\ref{sec:MCTS}). 
-On the bottom a search algorithm (see Section~\ref{sec:srcalg}) further investigate, at a finer grain, promising regions  coming from the top layer and updates score.
+Following the work done in \cite{zhang2018two} we decided to use a two layer strategy. In the top layer, Monte Carlo Tree Search act as a zoomed out view of the search: at each control point, the system quantizes the input space in regions and tries to iteratively explore new regions and give to those region a score mesuring how promising they are (see Section~\ref{sec:MCTS}). 
+In the bottom layer, a search algorithm (see Section~\ref{sec:srcalg}) starts a fine grain exploration in the promising regions coming from the top layer and updates score.
 
-The MCTS is often used in automated game play. This clearly underlines that, in fact, the model we are facing is an adversarial model. As if there was an adversary the error is cleverly placed and the strategy needs to be clever enough to find it. 
+Whilst the MCTS allows to tune the tradeoff between exploration and exploitation at a macroscopic level, the second layer algorithm works only on a few selected regions according to the time advance.
 
-The MCTS allow to fine tune the balance between exploration and exploitation at a macroscopic level while the choice of the second layer acts in the same way but atomically over points in the search space.
+Given the success of MCTS in automated game play, this approach seems to be promising in verification because of its adversarial characterization. In fact, we could interpret the verification problem as if the error is cleverly placed by an adversary and the strategy needs to be clever enough to find it. 
 
 \subsection{Upper-layer: MCTS}~\label{sec:MCTS}
-The MCTS aims to iteratively build a tree $T=(V,E)$ where nodes  $v \in V$ are labelled with a score $v.s$ and a counter $v.n$ and edges in $E$ are labelled with actions. At the begin, the tree is initialized as a root node with $root.s=Inf$ and $root.n=0$.
-The execution evolves in different phases (see Figure~(\ref{fig:mcts})).
+The MCTS is based on the iterative building of a tree $T=(V,E)$ where nodes $v \in V$ are labelled with a score $v.s$ and a counter $v.n$, and edges in $E$ are labelled with the corresponding actions. At the begin, the tree is initialized as a root node with $root.s=Inf$ and $root.n=0$.
+The execution evolves in different phases described below and represented by the Figure~\ref{fig:mcts}.
 
 \begin{figure}[H]
   \includegraphics[width=\linewidth]{img/mcts2.png}
@@ -68,20 +68,20 @@ The execution evolves in different phases (see Figure~(\ref{fig:mcts})).
   \label{fig:mcts}
 \end{figure}
 
-\paragraph{Selection:} Starting from the root until reaching a leaf (of the MCTS tree) we move to the node $v$ maximizing UCB($v$) (see \textbf{UBC} below). 
-The leaf, say $l$ will be sampled. If $l$ is sampled for the first time then Rollout($l$), else Expansion($l$).
+\paragraph{Selection:} Visit the tree starting from the root, moving to the node $v$ which maximize the UCB($v$) function explained in the following paragraph.
+Once a leaf $l$ is reached, if the tree hasn't yet reached its maximum expansion (i.e. the height of the tree corresponds to the control points in the simulation) then go to Expansion($l$), otherwise it directly run Rollout($l$).
 
-\paragraph{Expansion:} For each action $a$ available from $l$ we extend $T$ with a new node $v $ having $v.s=Inf$, $v.n=0$ and edge label $a$. Then a random child of $l,$ say $c_l,$ is chosen to do Rollout($c_l$).
+\paragraph{Expansion:} For each action $a$ available from $l$ we expand the tree $T$ with a new node $v$ having $v.s=Inf$, $v.n=0$ and connected to the node $l$ through an edge labeled $a$. Finally, we pick a random child $c$ of $l$, and run Rollout($c$).
 
-\paragraph{Rollout(l)} For each ancestor node of $l$ starting from the root till $l$ itself, the lower layer (see Section~\ref{sec:srcalg}) searches in the region of the selected node (tree policy). Then starting from $l$, the  trace simulation is driven by the search (default policy) up till horizon. At the end, the trace will have a robustness value of $s$ which will be used as an estimate for $l$ and its ancestors by means of Backpropagation($l,s$).
+\paragraph{Rollout(l)} For each ancestor node of $l$ starting from the root till $l$ itself, the lower layer (see Section~\ref{sec:srcalg}) searches in the region of the selected node (tree policy). Then starting from the leaf $l$, the remaining simulation is driven by the search (default policy) up till the horizon. At the end, the trace will have a robustness value of $s$ which will be used as an estimate for $l$ and its ancestors by means of Backpropagation($l,s$).
 
-\paragraph{Backpropagation(l,s):} From $l$ till the root, going trough $l$'s ancestors say $l=a_1, a_2, \dots, a_n=root$ , generic $a_i$ is updated as follow:
+\paragraph{Backpropagation(l,s):} From $l$ till the root, going trough $l$'s ancestors say $l=a_1, a_2, \dots, a_n=root$, update each $a_i$ as follow:
 \begin{itemize}
-    \item $a_i.n+=1$
-    \item $a_i.s=max\{a_i.s, s\}$
+    \item $a_i.n=a_i.n + 1$
+    \item $a_i.s=min\{a_i.s, s\}$
 \end{itemize}
 
-\paragraph{UCB(v):} In the most general MCTS implementation, given a node $v$ its UCB value is computed as:
+\paragraph{UCB(v):} In the most general MCTS implementation, the UCB value of the node $v$ is computed as:
 
 \begin{equation}
     UCB = v.s + C \cdot \sqrt{\frac{\ln N}{v.n}}
@@ -112,16 +112,16 @@ To overcome both the problems, along the line of \cite{zhang2018two}, we used UC
 % \begin{subfigure}{\textwidth}
 %   \centering
 %   % \includegraphics[width=0.4\linewidth]{img/c05.jpg}
-%   \includegraphics[width=\linewidth]{img/c05wide.jpg}
-%   \caption{Balanced ($C=0.5$).}
-%   \label{fig:c05}
+  % \includegraphics[width=\linewidth]{img/c05wide.jpg}
+  % \caption{Balanced ($C=0.5$).}
+  % \label{fig:c05}
 % \end{subfigure}\\
 % \begin{subfigure}{\textwidth}
-%   \centering
-%   % \includegraphics[width=0.4\linewidth]{img/c1.jpg}
-%   \includegraphics[width=\linewidth]{img/c10wide.jpg}
-%   \caption{Favour exploration ($C=1$).}
-%   \label{fig:c1}
+  % \centering
+  % % \includegraphics[width=0.4\linewidth]{img/c1.jpg}
+  % \includegraphics[width=\linewidth]{img/c10wide.jpg}
+  % \caption{Favour exploration ($C=1$).}
+  % \label{fig:c1}
 % \end{subfigure}
 % \caption{Different MCTS tree varying parameter $C$.}
 % \label{fig:C}
@@ -227,7 +227,7 @@ In contrast with the original definition of the Robustness, we proposed to norma
 
 \pagebreak
 
-\subsection{Experiments}~\label{sec:exp}
+\subsection{Experiments}~\label{sec:exp:exps}
 In order to evaluate the effectiveness of the proposed falsification framework, we executed a bunch of experiments on the Automatic Transmission model considering several search algorithms: Uniform Random Sampling (URS), MCTS with Random Search (MCTS+RS), MCTS with Hill Climbing (MCTS+HC), MCTS with Simulated Annealing (MCTS+SA).
 
 Since the execution of experiments is based on randomness, we repeated the same experiment 10 times to ensure more confident results.
