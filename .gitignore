@@ -1,4 +1,13 @@
 *~
+*.aux
+*.bbl
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.toc
+*.blg
 *slprj
 *.slxc
 *.original
