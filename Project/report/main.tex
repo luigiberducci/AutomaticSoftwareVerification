@@ -235,9 +235,9 @@ As a result, when the gear is different from the reference one (3) the first sub
 \subsection{The proposed baseline: \texttt{URS}}
 The two specifications above have been implemented in an external function in order to maintain a single model file. The Simulink model has been modified with two output blocks, respectively the \textit{speed} and the \textit{gear}. The external function computes the robustness according to the specification, described by a parameter in the configuration file.
 \\ \\
-The second specification \textit{S2} caused too long time to reach falsification and we decided to change its implementation in order to make it suitable to the time and resources that we can use. In particular, one of the main problem of \textit{S2} is the different units of measurement that lead to local minima. In fact, whilst speed is between 0 and 100, the gear is an integer value between 1 and 4.
+The second specification \texttt{S2} caused too long time to reach falsification and we decided to change its implementation in order to make it suitable to the time and resources that we can use. In particular, one of the main problem of \texttt{S2} is the different units of measurement that lead to local minima. In fact, whilst speed is between 0 and 100, the gear is an integer value between 1 and 4.
 
-In contrast with the original definition of the Robustness, we proposed to normalize the second subformula of \textit{S2} according to the unit scale. Since the speed goes from 0 to 100, we normalize the second subformula dividing by 100. In this way, the Robustness metric is still characterized by long plateau which make the search not trivial but we reduced the number of local minima.
+In contrast with the original definition of the Robustness, we proposed to normalize the second subformula of \texttt{S2} according to the unit scale. Since the speed goes from 0 to 100, we normalize the second subformula dividing by 100. In this way, the Robustness metric is still characterized by long plateau which make the search not trivial but we reduced the number of local minima.
 
 \begin{figure}[h]
     \centering
@@ -271,7 +271,7 @@ The tables below show the obtained results varying the parameter C which balance
 
 Furthermore, the results varying the input space partitioning are reported in the Table~\ref{table:patitioning} in order to emphasize the influence of hyperparameter tuning.
 
-In order to highlights the different approach of search algorithms adopted, the Figure~\ref{img:rob_monitoring} shows the Robustness over a sample of 5 experiments. For each search algorithm MCTS+RS, MCTS+HC, MCTS+SA, the Figure shows the Robustness obtained and the current best Robustness. Moreover, the Figure shows in the first half the experiments with $C=0.0$ and in the second half the experiments with $C=0.125$. In this way, it also highlights the impact of MCTS exploration/exploitation factor on the search algorithm underlying.
+In order to highlights the different approach of search algorithms adopted, the Figure~\ref{fig:rob_monitoring} shows the Robustness over a sample of 5 experiments. For each search algorithm MCTS+RS, MCTS+HC, MCTS+SA, the Figure shows the Robustness obtained and the current best Robustness. Moreover, the Figure shows the experiments with $C=0.0$ in the first half and the experiments with $C=0.125$ in the second. In this way, it also highlights the impact of MCTS exploration/exploitation factor on the search algorithm underlying.
 
 % TEST ON SPEC 1
 \begin{table}[ht]
@@ -281,21 +281,22 @@ In order to highlights the different approach of search algorithms adopted, the 
 \hline
 \multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
 \multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min       & avg      & std dev  & tot        & trace        \\ \hline
-URS                                         & - - -              &  40.0                   & 2/10                          & -4.07960  & 4.91882  & 5.514537 &  178.014 &  2.010    \\ \hline
-MCTS+RS                                     & 0.500              & - - -                   & 0/10                          &  5.30248  & 8.34921  & 2.400517 &  559.916 &  5.599    \\
-MCTS+HC                                     & 0.500              &  94.0                   & 1/10                          & -1.93401  & 5.07959  & 4.386757 & 1034.225 & 10.405    \\
-\textbf{MCTS+SA}                                     & \textbf{0.500}              &  \textbf{24.0}                   & \textbf{1/10}                          & \textbf{-0.68394}  & \textbf{7.71311}  & \textbf{4.152730} &  \textbf{891.788} &  \textbf{9.781}    \\ \hline
+URS                                         & - - -              & \textbf{40.0}           & \textbf{2/10}                 & \textbf{-4.07960}    & \textbf{4.91882}
+                                            & \textbf{5.514537}  & \textbf{178.014}        & \textbf{2.010}    \\ \hline
+MCTS+RS                                     & 0.500              & - - -                   & 0/10                          &  5.30248  & 8.34921  & \textbf{2.400517} &  \textbf{559.916} &  \textbf{5.599}    \\
+MCTS+HC                                     & 0.500              &  94.0                   & \textbf{1/10}                 & \textbf{-1.93401}  & \textbf{5.07959} & 4.386757 & 1034.225 & 10.405    \\
+MCTS+SA                                     & 0.500              &  \textbf{24.0}          & \textbf{1/10}                 & -0.68394           & 7.71311          & 4.152730 &  891.788 &  9.781    \\ \hline
 
-MCTS+RS                                     & 0.250              &  62.0                   & 4/10                          & -4.52952  &  2.80386 & 4.995340 &  355.163 &  4.198    \\
+MCTS+RS                                     & 0.250              &  \textbf{62.0}          & 4/10                          & -4.52952  &  2.80386 & 4.995340 &  \textbf{355.163} &  \textbf{4.198}    \\
 MCTS+HC                                     & 0.250              &  74.4                   & 5/10                          & -3.63763  &  2.02058 & 4.289398 &  676.262 &  7.774    \\
-\textbf{MCTS+SA}                                     & \textbf{0.250}              &  \textbf{74.6}                   & \textbf{7/10}                          & \textbf{-10.29078} & \textbf{-2.38069} & \textbf{3.744391} &  \textbf{597.866} &  \textbf{7.297}    \\ \hline
+MCTS+SA                                     & 0.250              &  74.6                   & \textbf{7/10}                          & \textbf{-10.29078} & \textbf{-2.38069} & \textbf{3.744391} &  597.866 &  7.297    \\ \hline
 
-\textbf{MCTS+RS}                                     & \textbf{0.125}              &  \textbf{46.5}                   & \textbf{8/10}                          & \textbf{-6.27352}  & \textbf{-1.28520} & \textbf{3.320830} &  \textbf{170.078} &  \textbf{2.996}    \\
-MCTS+HC                                     & 0.125              &  68.1                   & 8/10                          & -4.61933  & -0.07330 & 4.719893 &  380.664 &  5.127    \\
-MCTS+SA                                     & 0.125              &  48.5                   & 8/10                          & -6.43350  & -0.69363 & 5.875865 &  304.758 &  5.225    \\ \hline
+MCTS+RS                                     & 0.125              &  \textbf{46.5}          & \textbf{8/10}                          & -6.27352  & \textbf{-1.28520} & \textbf{3.320830} &  \textbf{170.078} &  \textbf{2.996}    \\
+MCTS+HC                                     & 0.125              &  68.1                   & \textbf{8/10}                         & -4.61933  & -0.07330 & 4.719893 &  380.664 &  5.127    \\
+MCTS+SA                                     & 0.125              &  48.5                   & \textbf{8/10}                         & \textbf{-6.43350}  & -0.69363 & 5.875865 &  304.758 &  5.225    \\ \hline
 
-MCTS+RS                                     & 0.000              &  65.5                   & 2/10                          & -4.20689  & 6.83323  & 7.070816 &  325.054 &  3.510    \\
-\textbf{MCTS+HC}                                     & \textbf{0.000}              &  \textbf{41.0}                   & \textbf{4/10}                          & \textbf{-2.64884}  & \textbf{1.95654}  & \textbf{3.712926} &  \textbf{430.037} &  \textbf{5.589}    \\
+MCTS+RS                                     & 0.000              &  65.5                   & 2/10                          & \textbf{-4.20689}  & 6.83323  & 7.070816 & \textbf{325.054} &  \textbf{3.510}    \\
+MCTS+HC                                     & 0.000              &  \textbf{41.0}          & \textbf{4/10}                          & -2.64884  & \textbf{1.95654}  & \textbf{3.712926} &  430.037 &  5.589    \\
 MCTS+SA                                     & 0.000              &  78.0                   & 2/10                          & -1.51834  & 4.81908  & 6.613282 &  558.383 &  5.834    \\ \hline
 \end{tabular}
 \caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}~\label{table:res:s1}
@@ -309,21 +310,21 @@ MCTS+SA                                     & 0.000              &  78.0        
 \hline
 \multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{C} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
 \multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min      & avg      & std dev  & tot        & trace        \\ \hline
-URS                                         & - - -              & - - -                   & 0/10                          & 0.02080  & 0.06130  & 0.03130  &  408.585   &  4.086       \\ \hline
-MCTS+RS                                     & 0.500              &  90.0                   & 2/10                          & 0.00000  & 0.05430  & 0.04420  &  397.635   &  4.056       \\
-\textbf{MCTS+HC}                                     & \textbf{0.500}              &  \textbf{53.0}                   & \textbf{7/10}                          & \textbf{0.00000}  & \textbf{0.00490}  & \textbf{0.00840}  & \textbf{1039.426}   & \textbf{15.517}       \\
+URS                                         & - - -              & - - -                   & \textbf{0/10}                 & \textbf{0.02080}  & \textbf{0.06130}  & \textbf{0.03130}  &  \textbf{408.585}   &  \textbf{4.086}       \\ \hline
+MCTS+RS                                     & 0.500              &  90.0                   & 2/10                          & \textbf{0.00000}  & 0.05430  & 0.04420  &  \textbf{397.635}   &  \textbf{4.056}       \\
+MCTS+HC                                     & 0.500              &  \textbf{53.0}          & \textbf{7/10}                 & \textbf{0.00000}  & \textbf{0.00490}  & \textbf{0.00840}  & 1039.426   & 15.517       \\
 MCTS+SA                                     & 0.500              & - - -                   & 0/10                          & 0.00071  & 0.04930  & 0.04330  &  681.465   &  6.815       \\ \hline
 
-MCTS+RS                                     & 0.250              & - - -                   & 0/10                          & 0.00661  & 0.03571  & 0.02372  &  572.351   &  5.723       \\
-\textbf{MCTS+HC}                                     & \textbf{0.250}              &  \textbf{29.1}                   & \textbf{9/10}                          & \textbf{0.00000}  & \textbf{0.00023}  & \textbf{0.00073}  &  \textbf{914.175}   & \textbf{26.076}       \\
-MCTS+SA                                     & 0.250              &  46.0                   & 1/10                          & 0.00000  & 0.06933  & 0.09205  &  941.542   &  9.977       \\ \hline
+MCTS+RS                                     & 0.250              & - - -                   & 0/10                          & 0.00661  & 0.03571  & 0.02372  &  \textbf{572.351}   &  \textbf{5.723}       \\
+MCTS+HC                                     & 0.250              &  \textbf{29.1}                   & \textbf{9/10}                          & \textbf{0.00000}  & \textbf{0.00023}  & \textbf{0.00073}  &  914.175   & 26.076       \\
+MCTS+SA                                     & 0.250              &  46.0                   & 1/10                          & \textbf{0.00000}  & 0.06933  & 0.09205  &  941.542   &  9.977       \\ \hline
 
-MCTS+RS                                     & 0.125              &  42.7                   & 3/10                          & 0.00000  & 0.04101  & 0.03548  &  275.017   &  3.325       \\
-\textbf{MCTS+HC}                                     & \textbf{0.125}              &  \textbf{31.6}                   & \textbf{8/10}                          & \textbf{0.00000}  & \textbf{0.00388}  & \textbf{0.00843}  &  \textbf{497.749}   & \textbf{11.466}       \\
-MCTS+SA                                     & 0.125              &  76.3                   & 4/10                          & 0.00000  & 0.05349  & 0.11098  &  506.049   &  5.577       \\ \hline
+MCTS+RS                                     & 0.125              &  42.7                   & 3/10                          & \textbf{0.00000}  & 0.04101  & 0.03548  &  \textbf{275.017}   &  \textbf{3.325}       \\
+MCTS+HC                                     & 0.125              &  \textbf{31.6}                   & \textbf{8/10}                          & \textbf{0.00000}  & \textbf{0.00388}  & \textbf{0.00843}  &  497.749   & 11.466       \\
+MCTS+SA                                     & 0.125              &  76.3                   & 4/10                          & \textbf{0.00000}  & 0.05349  & 0.11098  &  506.049   &  5.577       \\ \hline
 
-MCTS+RS                                     & 0.000              &  32.0                   & 1/10                          & 0.00000  & 0.14757  & 0.16817  &  473.518   &  5.113       \\
-\textbf{MCTS+HC}                                     & \textbf{0.000}              &  \textbf{36.6}                   & \textbf{5/10}                          & \textbf{0.00000}  & \textbf{0.01148}  & \textbf{0.01682}  & \textbf{1322.240}   & \textbf{19.317}       \\
+MCTS+RS                                     & 0.000              &  \textbf{32.0}          & 1/10                          & \textbf{0.00000}  & 0.14757  & 0.16817  &  \textbf{473.518}   &  \textbf{5.113}       \\
+MCTS+HC                                     & 0.000              &  36.6                   & \textbf{5/10}                 & \textbf{0.00000}  & \textbf{0.01148}  & \textbf{0.01682}  & 1322.240   & 19.317       \\
 MCTS+SA                                     & 0.000              & - - -                   & 0/10                          & 0.00834  & 0.16304  & 0.14714  &  873.488   &  8.734       \\ \hline
 \end{tabular}
 \caption{Comparison between MCTS and URS, given a budget of 100 simulations and varying the parameter C in order to balance exploration and exploitation in the search. The input signals have been split into 2 and 3 region.}~\label{table:res:s2}
@@ -337,13 +338,13 @@ MCTS+SA                                     & 0.000              & - - -        
 \hline
 \multicolumn{1}{|c|}{\multirow{2}{*}{Algo}} & \multirow{2}{*}{Part} & Avg Trace               & \multirow{2}{*}{Success Rate} & \multicolumn{3}{c|}{Robustness} & \multicolumn{2}{c|}{Time (sec)} \\ \cline{5-9} 
 \multicolumn{1}{|c|}{}                      &                    & Falsification           &                               & min      & avg      & std dev  & tot        & trace        \\ \hline
-URS                                         & - - -              & - - -                   & 0/10                          & 0.02080  & 0.06130  & 0.03130  &  408.585   &  4.086       \\ \hline
-MCTS+RS                                     & 2x3                &  90.0                   & 2/10                          & 0.00000  & 0.05430  & 0.04420  &  397.635   &  4.056       \\
-\textbf{MCTS+HC}                                     & \textbf{2x3}                &  \textbf{53.0}                   & \textbf{7/10}                          & \textbf{0.00000}  & \textbf{0.00490}  & \textbf{0.00840}  & \textbf{1039.426}   & \textbf{15.517}       \\
+URS                                         & - - -              & - - -                   & \textbf{0/10}                 & \textbf{0.02080}  & \textbf{0.06130}  & \textbf{0.03130}  &  \textbf{408.585}   &  \textbf{4.086}       \\ \hline
+MCTS+RS                                     & 2x3                &  90.0                   & 2/10                          & \textbf{0.00000}  & 0.05430  & 0.04420  &  \textbf{397.635}   &  \textbf{4.056}       \\
+MCTS+HC                                     & 2x3                &  \textbf{53.0}                   & \textbf{7/10}                          & \textbf{0.00000}  & \textbf{0.00490}  & \textbf{0.00840}  & 1039.426   & 15.517       \\
 MCTS+SA                                     & 2x3                & - - -                   & 0/10                          & 0.00071  & 0.04930  & 0.04330  &  681.465   &  6.815       \\ \hline
 
-MCTS+RS                                     & 2x2                &  70.0                   & 3/10                          & 0.00000  & 0.06517  & 0.06197  &  631.963   &  6.804       \\
-\textbf{MCTS+HC}                                     & \textbf{2x2}                &  \textbf{48.7}                   & \textbf{7/10}                          & \textbf{0.00000}  & \textbf{0.00099}  & \textbf{0.00163}  & \textbf{1479.660}   & \textbf{22.530}       \\
+MCTS+RS                                     & 2x2                &  70.0                   & 3/10                          & \textbf{0.00000}  & 0.06517  & 0.06197  &  \textbf{631.963}   &  \textbf{6.804}       \\
+MCTS+HC                                     & 2x2                &  \textbf{48.7}                   & \textbf{7/10}                          & \textbf{0.00000}  & \textbf{0.00099}  & \textbf{0.00163}  & 1479.660   & 22.530       \\
 MCTS+SA                                     & 2x2                & - - -                   & 0/10                          & 0.00561  & 0.05776  & 0.02567  & 1393.552   & 13.936       \\ \hline
 \end{tabular}
 \caption{Comparison of search algo with fixed C=0.5 and varying the input space partitioning. Test on spec \texttt{S2}.}~\label{table:patitioning}
@@ -398,7 +399,8 @@ Considering the experiments with $C=0.0$, all the algorithms seem to explore the
 
 Conversely, considering the best tuning with $C=0.125$, all the algorithms perform better than the previous experiments. The peculiar behaviour of each algorithm is confirmed. In fact, we can easily recognize the shape of the MCTS+HC compared with the others.
 
-\begin{figure}[H]~\label{img:rob_monitoring}
+\begin{figure}[H]
+	\label{fig:rob_monitoring}
     \centering
     \textbf{Robustness Monitoring - Test with C=0.0}\par
     \includegraphics[width=\linewidth]{img/0_000/compare_search_rob_blue.jpg}
@@ -456,7 +458,7 @@ In conclusion, we would like to propose a few developments of the presented work
             \item the branching factor at different levels of tree because the height of the tree corresponds to the time advancement. We could adopt a low branching factor in less significant period of time and a wide branching factor on more interesting time periods.
         \end{enumerate}
     \item The adopted UCB formula seems to be a bias towards exploration because the two terms are not normalized properly. In fact, the first term is normalized in [0,1] whilst the second term is not and change in [0,3]. We could rafine this formula normalizing the second term with respect to the max value, improving the performance.
-    \item The tree structure of MCTS seems to be adapt to a parallel execution. In particular, the expansion phase at a given layer will expand all node with a 0 score and, up till exist one, a node with such score is selected. Then it is possible to exploit embarrassing parallelism with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, one layer can be attacked at once to reduce the exploration cost and invest in exploration. 
+    \item The tree structure of MCTS seems to be adapt to a parallel execution. In particular, we noticed that the expansion phase expands all node with a 0 score and, up till exist one, a node with such score is selected. Then, it is possible to exploit parallelism at each layer with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, each layer can be attacked at once to reduce the exploration cost and invest in rollout. 
 \end{enumerate}
 
 The system presented, which eventually obtains good performances, could largely benefits from all these new directions.
