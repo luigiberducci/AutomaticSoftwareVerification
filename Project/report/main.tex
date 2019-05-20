@@ -86,14 +86,14 @@ Once a leaf $l$ is reached, if the tree hasn't yet reached its maximum expansion
 \begin{equation}
     UCB = v.s + C \cdot \sqrt{\frac{\ln N}{v.n}}
 \end{equation}
-where $N = root.n$ hence the total number of visited nodes. The idea behind the parameter $C$ (see Figure~\ref{fig:C}) is to fine-tune exploration (see \ref{fig:c1}) vs exploitation (see \ref{fig:c0}). 
+where $N = root.n$ hence the total number of visited nodes. The idea behind the parameter $C$ (see Figure~\ref{fig:c0},~\ref{fig:c05},~\ref{fig:c1}) is to fine-tune exploration (see Figure~\ref{fig:c1}) and exploitation (see Figure~\ref{fig:c0}). 
 
 When considering the falsification problem thus using robustness as heuristic we face two problem:
 \begin{itemize}
-    \item Robustness can have positive yet negative values while classical UCB is designed to work with only positive value. 
-    \item Generally, given a specification it is not possible to give an upper bound to the robustness domain. 
+    \item Robustness can have positive as well as negative values, while classical UCB is designed to work only with positive value. 
+    \item Given a specification, generally it is not possible to define an upper bound to the robustness domain. 
 \end{itemize}
-To overcome both the problems, along the line of \cite{zhang2018two}, we used UCT defined as:
+In order to overcome both the problems, along the line of \cite{zhang2018two}, we used UCT defined as:
 
 \begin{equation}
     UCT = 1 - \frac{v.s}{max_v v.s} + C \cdot \sqrt{\frac{\ln N}{v.n}}
@@ -171,27 +171,30 @@ To overcome both the problems, along the line of \cite{zhang2018two}, we used UC
 \subsection{Lower-layer: Search Algorithms}~\label{sec:srcalg}
 In the very end, the falsification task boils down to a search in the space of the states. 
 We aim to find a falsifying trace of $k$ disturbances, where $k$ is the number of desired control points. 
-To do so the MCTS (see Section~\ref{sec:MCTS}) when selects a node at depth $h$ to rollout from it, MCTS is basically defining a meta-trace $\hat{\delta}$. The first $h$ meta-disturb of $\hat{\delta}$ ($\hat{\delta}$ prefix) are regions of the input space in which to bound the search, and in the suffix the search is allowed in the whole input space. 
+
+When the MCTS (see Section~\ref{sec:MCTS}) selects a node at depth $h$ from which to start the rollout, the MCTS is basically defining a meta-trace $\hat{\delta}$.
+The first $h$ meta-disturb of $\hat{\delta}$ ($\hat{\delta}$ prefix) are regions of the input space in which to restrict the search, and in the remaining part of the trace (suffix) the search is allowed in the whole input space. 
 
 One of the following search algorithm is then used to produce a trace $\delta$ accordingly with the semantic of $\hat{\delta}$.
 
 \subsubsection{Random Search: MCTS Left Alone}
-To have a way to evaluate the contribution purely given by the MCTS layer, we decided to implement a fast yet dumb search strategy.
+To have a way to evaluate the contribution purely given by the MCTS layer, we decided to implement a fast and dumb search strategy.
 Given a meta-trace $\hat{\delta}$, for each control point $k$ in $\hat{\delta}$, RS basically samples u.a.r. a disturbance from the appropriate region for such control point.
-This result in a very fast yet only exploring algorithm (see Section~\ref{sec:exp} for comparison). 
+This result in a very fast algorithm which basically delegates all the search to the upper layer (see Section~\ref{sec:exp} for comparison). 
 
 \subsubsection{Hill Climbing: the Greedy}
-Here, the classical Hill Climbing implementation has been used. The only difference is that, since eventually we need a full trace (a trace having a disturbance for each control point), in the case a not worst neighbour isn't found at a given depth of the search, a random one is selected. 
+Here, the classical Hill Climbing implementation has been used. The only difference is that, since eventually we need a full trace (a trace having a disturbance for each control point), in the case HC can't find a non pejorative move at a given depth of the search, the less pejorative move available is selected. 
 
-Also, to have a stronger falsification power, at the cost of a longer simulation time restart has been implemented. 
+Also, to have a stronger falsification power, at the cost of a longer simulation time restart has been implemented but not adopted in the experiments. 
 
 On the other hand to speed up the simulation, at the cost of a weaker falsification power it is possible to bound the number of
 neighbour tested by the algorithm at each step. 
 Clearly this search strategy is way clever and effective than RS. Conversely, the simulation time needed to carry on the falsification process with a non trivial property to falsify is of another order of magnitude (see Section~\ref{sec:exp} for comparison).
 
 \subsubsection{Simulated Annealing: the Impatient}
-Again, classical search algorithm, basically an HC enriched with a notion of temperature or, as it is in this case, the MCTS budget (hence number of expanded nodes). The higher the temperature the hardest is to make a pejorative move. 
-The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC (see Section~\ref{sec:exp} for comparison).
+The SA, basically an HC enriched with a notion of temperature has been implemented. As notion of temperature the MCTS budget (hence number of expanded nodes) has been used. The higher the temperature the hardest is to make a pejorative move. 
+The goal here is to further balance exploration and exploitation and be, in terms of speed and performance in the middle of RS ans HC.
+Note that, since MCTS already implements exploration, the SA introduces some redundancy in the search (a bias towards exploration) that could affect the final result (see Section~\ref{sec:exp} for comparison).
 
 
 \pagebreak
@@ -211,12 +214,12 @@ There are several specifications defined on this model because it is a common be
 \end{enumerate}
 
 We selected these two specifications because they are representative of different kind of search.
-As explained in Section~\ref{sec:metic}, the first is easier to falsify as a greedy approach drives towards the decrease of robustness, the latter requires an higher exploration factor thus a more intelligent search.
+As explained in Section~\ref{sec:metic}, the former is easier to falsify because a greedy approach drives towards the decrease of robustness. Conversely the latter requires an higher exploration factor and then a more clever search.
 
 \subsection{Implementation of Robustness Metric}~\label{sec:metic}
-In order to undestand the difficulty of falsification of the second specification, we need to spend a few words on the computation of robustness metric used to drive the search.
+In order to understand the difficulty of falsification of the second specification, we need to spend a few words on the computation of robustness metric used to drive the search.
 
-According to the definition of Robustness given in\cite{fainekos2006robustness}, this metric gives us a measure of how the state of the model is far from the falsification. In the first specification,    the computation of Robustness is simply the difference between the reference speed and the current speed. Conversely, in the second specification the computation is more complex and can be summarized by  the following steps:
+According to the definition of Robustness given in~\cite{fainekos2006robustness}, this metric gives us a measure of how the state of the model is far from the falsification. In the first specification,    the computation of Robustness is simply the difference between the reference speed and the current speed. Conversely, in the second specification the computation is more complex and can be summarized by  the following steps:
 
 \begin{enumerate}
 \item Since the second specification is an implication, we wrote it as an \texttt{OR}.
@@ -227,14 +230,14 @@ According to the definition of Robustness given in\cite{fainekos2006robustness},
 
 Notice that the value of the second subformula is positive if the current speed is greater than 20, otherwise is negative. Conversely, the value of the first subformula is a small positive integer.
 
-As a result, when the gear is different from the reference one (3) then the first subformula dominates the Robustness computation. When the gear is the third one, then the value could be dominated by     the second subformula only if it is greater than 20 and then positive. Then, the resulting metric space is characterized by long plateau when the current speed is far from 20 and local minima because of  the different unit of measurement for gear and speed.
+As a result, when the gear is different from the reference one (3) the first subformula dominates the Robustness computation. When the gear is the third one, the value could be dominated by     the second subformula only if it is greater than 20 and then positive. Then, the resulting metric space is characterized by long plateau when the current speed is far from 20, and local minima because of  the different unit of measurement for gear and speed.
 
 \subsection{The proposed baseline: \texttt{URS}}
 The two specifications above have been implemented in an external function in order to maintain a single model file. The Simulink model has been modified with two output blocks, respectively the \textit{speed} and the \textit{gear}. The external function computes the robustness according to the specification, described by a parameter in the configuration file.
 \\ \\
-The second specification S2 caused too long time to reach falsification and we decided to change its implementation in order to make it suitable to the time and resources that we can use. In particular, one of the main problem of S2 is the different units of measurment that lead to local minima. In fact, whilst speed is between 0 and 100, the gear is an integer value between 1 and 4.
+The second specification \textit{S2} caused too long time to reach falsification and we decided to change its implementation in order to make it suitable to the time and resources that we can use. In particular, one of the main problem of \textit{S2} is the different units of measurement that lead to local minima. In fact, whilst speed is between 0 and 100, the gear is an integer value between 1 and 4.
 
-In contrast with the original definition of the Robustness, we proposed to normalize the second subformula of S2 according to the unit scale. Since the speed goes from 0 to 100, we normalize the second subformula dividing by 100. In this way, the Robustness metric is still characterized by long plateau which make the search not trivial but we reduced the number of local minima.
+In contrast with the original definition of the Robustness, we proposed to normalize the second subformula of \textit{S2} according to the unit scale. Since the speed goes from 0 to 100, we normalize the second subformula dividing by 100. In this way, the Robustness metric is still characterized by long plateau which make the search not trivial but we reduced the number of local minima.
 
 \begin{figure}[h]
     \centering
@@ -250,7 +253,7 @@ In order to evaluate the effectiveness of the proposed falsification framework, 
 
 Since the execution of experiments is based on randomness, we repeated the same experiment 10 times to ensure more confident results.
 
-First of all, we observed that the effectiveness of MCTS is based on its capacity to build the complete tree. In fact, the MCTS algorithm is characterized by a inherent phase of exploration which allows to have a general view of the space (tree width) and the time (tree height). Only when the tree is complete, the MCTS algorithm results effective and specializes the search.
+First of all, we observed that the effectiveness of MCTS is based on its capacity to build the complete tree. In fact, the MCTS algorithm is characterized by a inherent phase of exploration which allows to have a general view of the space (tree width) and the time (tree height). Only when the tree is sufficiently complete, the MCTS algorithm results effective and specializes the search.
 As a consequence, if the branching factor of the nodes is too high, the number of simulation required to build the entire tree is huge and the MCTS doesn't result effective, compared with the URS. 
 
 Thus, in order to exploit the power of MCTS, we tuned the split parameters for the input signals. The Speed signal has been split into 2 regions and the Brake signal has been split into 3 regions, then the branching factor of the tree is 6. In the original paper \cite{zhang2018two}, they
@@ -268,7 +271,7 @@ The tables below show the obtained results varying the parameter C which balance
 
 Furthermore, the results varying the input space partitioning are reported in the Table~\ref{table:patitioning} in order to emphasize the influence of hyperparameter tuning.
 
-In order to highlights the different approach of search algorithms adopted, the Figure~\ref{img:rob_monitoring} shows the Robustness over the experiments of a sample of 5 experiments. For each search algorithm MCTS+RS, MCTS+HC, MCTS+SA, the Figure represent what has been the Robustness obtained and the current best Robustness. Moreover, the Figure shows in the first half the experiments with $C=0.0$ and in the second half the experiments with $C=0.125$. In this way, it also highlights the impact of MCTS exploration/exploitation factor on the search algorithm underlying.
+In order to highlights the different approach of search algorithms adopted, the Figure~\ref{img:rob_monitoring} shows the Robustness over a sample of 5 experiments. For each search algorithm MCTS+RS, MCTS+HC, MCTS+SA, the Figure shows the Robustness obtained and the current best Robustness. Moreover, the Figure shows in the first half the experiments with $C=0.0$ and in the second half the experiments with $C=0.125$. In this way, it also highlights the impact of MCTS exploration/exploitation factor on the search algorithm underlying.
 
 % TEST ON SPEC 1
 \begin{table}[ht]
@@ -363,10 +366,10 @@ The first experiments presented consider a fixed input space partitioning (2x3) 
 \paragraph{S1} \textit{The engine speed never reaches 120}. Clearly the robustness function resulting by \texttt{S1} is proportional to the break signal and inversely proportional to throttle, \textit{i.e.} high value of throttle and low value of brake lead to low robustness.
 As a consequence, minimizing the robustness should be quite straightforward, even using a greedy search, such as Hill Climbing.
 
-According to this intuition, the best performing experiments are those with a reasonably small value for $C=0.125$, as you ca see in Table~\ref{table:res:s1}.
-Recall that a small $C$ means give a bias towards exploitation rather than exploration. Thus, encouraging the exploitation reflects the monotonic nature of the robustness of \texttt{S1} and then exploiting promising regions gives back promising results.
+According to this intuition, the best performing experiments are those with a reasonably small value for $C=0.125$, as you can see in Table~\ref{table:res:s1}.
+Recall that a small $C$ means to give a bias towards exploitation rather than exploration. Thus, encouraging the exploitation reflects the monotonic nature of the robustness of \texttt{S1} and then exploiting promising regions gives back promising results.
 
-The results obtained by MCTS and Hill Climbing (MCTS+HC) represent another evidence of this intuition. Furthermore, the computational overhead due to the Hill Climbing search is almost negligible. The reason is that the search proceeds almost straight, following the steepest hill of the robustness curve and then Hill Climbing easily finds not pejorative neighbour. 
+The results obtained by MCTS and Hill Climbing (MCTS+HC) confirm this intuition. Furthermore, the computational overhead due to the Hill Climbing search is almost negligible. The reason is that the search proceeds almost straight, following the steepest hill of the robustness curve and then Hill Climbing easily finds not pejorative neighbour. 
 
 Conversely, favouring exploration (\textit{e.g.} $C=0.5$) results in extremely poor results. In fact, the falsification rate is even worst than \texttt{URS} and the reason is that most of the budget is wasted in the exploration of the huge state space. Moreover, the overhead of Hill Climbing (MCTS+HC) and Simulated Annealing (MCTS+SA) is quite relevant because exploration of less promising regions leads to difficulties in finding not pejorative neighbours (MCTS+HC presents a net 2x overhead).
 
@@ -384,7 +387,7 @@ Note that:
 \end{itemize}
 The ratio among the two factors is in the order of $2.5$. Then, using $C=0.25$, this ratio is mapped into a more reasonable and performing $0.6$ factor which favours exploitation and maintains exploration.
 
-Finally, in the experiments which falsify the specification, the number of simulated trace is surprisingly small, as reported by the column \textit{Avg Trace Falsification}. This is due the effectiveness of the search algorithm and highlights their performance.
+Finally, in the experiments which falsify the specification, the number of simulated trace is surprisingly small, as reported by the column \textit{Avg Trace Falsification}. This is due the effectiveness of the search algorithms and highlights their performance.
 
 \paragraph{Impact of search algorithms.}
 The previous comments consider the obtained result in a monolithic way, without any consideration of the two-layers search. Considering the details about the Robustness distribution varying the search algorithm allows to understand what is the impact of each search algorithm in the lower level. For this reason, we reported a sample of 5 tests in the Figure~\ref{img:rob_monitoring} varying the search algorithm and presenting the result with $C=0.0$ (worst performance) and $C=0.125$ (best performance).
@@ -414,7 +417,7 @@ Comparing the times of the several MCTS implementations with the Uniform Random 
 Unfortunately, this is only true when using Random Sampling as search algorithm. Any other search algorithm ends up in a more consistent overhead, after all \textit{there is no free lunch}. 
 
 \paragraph{State Space Partitioning}
-Table~\ref{table:patitioning} show another direction of tests we investigated on. In such experiment, the state space is partitioned in a different way: the throttle and the brake has been divided into two regions (2x2) or in two and three regions respectively (2x3), as in the previous experiments.
+Table~\ref{table:patitioning} shows another direction of tests we investigated on. In such experiment, the state space is partitioned in a different way: the throttle and the brake has been divided into two regions (2x2) or in two and three regions respectively (2x3), as in the previous experiments.
 This may sound as a pointless modification but it opens up the scenario described till now to a new perspective.
 This new partitioning induces a MCTS tree with a smaller branching factor ($4$ vs $6$). Direct consequences are the following:
 \begin{enumerate}
@@ -453,7 +456,7 @@ In conclusion, we would like to propose a few developments of the presented work
             \item the branching factor at different levels of tree because the height of the tree corresponds to the time advancement. We could adopt a low branching factor in less significant period of time and a wide branching factor on more interesting time periods.
         \end{enumerate}
     \item The adopted UCB formula seems to be a bias towards exploration because the two terms are not normalized properly. In fact, the first term is normalized in [0,1] whilst the second term is not and change in [0,3]. We could rafine this formula normalizing the second term with respect to the max value, improving the performance.
-    \item The tree structure of MCTS seems to be adapt to a parallel execution. In particular, the expansion phase at a given layer will expand all node with a 0 score and up till exist a 0 score node a node with such score is selected, it is possible to exploit embarrassing parallelism with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, one layer can be attacked at once to reduce the exploration cost and invest in exploration. 
+    \item The tree structure of MCTS seems to be adapt to a parallel execution. In particular, the expansion phase at a given layer will expand all node with a 0 score and, up till exist one, a node with such score is selected. Then it is possible to exploit embarrassing parallelism with a master-slave architecture to speed up the expansion phase which is the bottle neck of MCTS. That way, one layer can be attacked at once to reduce the exploration cost and invest in exploration. 
 \end{enumerate}
 
 The system presented, which eventually obtains good performances, could largely benefits from all these new directions.
